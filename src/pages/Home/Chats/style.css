@@ -1,0 +1,154 @@
+
+.container {
+    width: 100%;
+}
+
+.chats {
+    height: calc(100vh - 160px); /* Height - Header - Footer - Search Input */
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.chat {
+    position: relative;
+    display: flex;
+    height: 48px;
+    padding: 13px 16px;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+
+    & img {
+        height: 48px;
+        width: 48px;
+        border-radius: 48px;
+    }
+
+    & > div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &.active,
+    &:hover {
+        background: #e8edf3;
+    }
+
+    &.sticky::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: red;
+    }
+}
+
+.info {
+    display: flex;
+    margin-left: 16px;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.username {
+    max-width: 170px;
+    margin: 0;
+    padding: 0;
+    padding-right: 4px;
+    margin-bottom: 12px;
+    font-family: 'Helvetica';
+    font-size: 15px;
+    color: rgba(74, 74, 74, .9);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.message {
+    max-width: 170px;
+    font-size: 14px;
+    color: #9b9b9b;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.times {
+    font-size: 12px;
+    color: #979797;
+}
+
+.dot {
+    position: relative;
+
+    &::after {
+        position: absolute;
+        top: -8px;
+        right: -12px;
+        width: 20px;
+        height: 20px;
+    }
+
+    &.green::after {
+        content: '';
+        background: url(../../../../assets/images/messageGreen.png) 0 0 no-repeat;
+        background-size: 100% 100%;
+    }
+
+    &.red::after {
+        content: '';
+        background: url(../../../../assets/images/messageRed.png) 0 0 no-repeat;
+        background-size: 100% 100%;
+    }
+}
+
+@media (width <= 800px) {
+    .chats {
+        height: calc(100vh - 86px - 46px);
+    }
+
+    .chat {
+        height: 36px;
+        padding: 8px 16px;
+
+        & img {
+            height: 36px;
+            width: 36px;
+        }
+
+        &.sticky::before {
+            width: 4px;
+        }
+    }
+
+    .info {
+        margin-left: 12px;
+    }
+
+    .username {
+        max-width: 160px;
+        margin-bottom: 4px;
+        font-size: 13px;
+    }
+
+    .message {
+        max-width: 160px;
+        font-size: 12px;
+    }
+
+    .times {
+        font-size: 11px;
+    }
+
+    .dot {
+        &::after {
+            bottom: 3px;
+            width: 6px;
+            height: 6px;
+            border-radius: 6px;
+        }
+    }
+}

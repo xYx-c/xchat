@@ -1,0 +1,52 @@
+{
+  "name": "xchat",
+  "version": "2.2.0",
+  "main": "dist-electron/main/index.js",
+  "description": "Electron Vite React boilerplate.",
+  "author": "alex <xYx.c@outlook.com>",
+  "license": "MIT",
+  "private": true,
+  "debug": {
+    "env": {
+      "VITE_DEV_SERVER_URL": "http://127.0.0.1:7777/"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && electron-builder",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-decorators": "^7.21.0",
+    "axios": "^1.4.0",
+    "classnames": "^2.3.2",
+    "delegate": "^3.2.0",
+    "electron-json-storage": "^4.5.0",
+    "electron-updater": "^5.3.0",
+    "han": "^0.0.7",
+    "mobx": "^6.9.0",
+    "mobx-react": "^7.6.0",
+    "moment": "^2.29.4",
+    "randomcolor": "^0.6.2",
+    "react-addons-css-transition-group": "^15.6.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.32.0",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react": "^3.1.0",
+    "electron": "^23.2.0",
+    "electron-builder": "^23.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^4.2.2",
+    "sass": "^1.60.0",
+    "vite": "^4.3.5",
+    "vite-plugin-electron": "^0.11.2",
+    "vite-plugin-electron-renderer": "^0.14.1"
+  },
+  "engines": {
+    "node": "^14.18.0 || >=16.0.0"
+  }
+}

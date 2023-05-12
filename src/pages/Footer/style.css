@@ -1,0 +1,201 @@
+
+:root {
+    --icon-color: #777;
+    --active: #34b7f1;
+    --shadow-color: #eaedea;
+}
+
+.footer {
+    position: relative;
+    background: #fff;
+    box-shadow: inset 0 1px 0 0 var(--shadow-color);
+    z-index: 9;
+
+    & nav {
+        display: flex;
+        width: calc(311px - 34px);
+        height: 60px;
+        padding: 17px 17px 0;
+        justify-content: space-between;
+        box-shadow: inset -1px 0 0 0 var(--shadow-color);
+    }
+
+    & nav span {
+        display: block;
+        width: 24px;
+        height: 27px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    & nav i {
+        color: var(--icon-color);
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    & nav span:hover i {
+        color: var(--active) !important;
+    }
+}
+
+.footer .active {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 1px;
+        width: 100%;
+        background: var(--active);
+    }
+
+    & i {
+        color: var(--active) !important;
+    }
+}
+
+.right {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: calc(100% - 311px);
+}
+
+.contacts {
+    position: relative;
+    display: flex;
+    height: 60px;
+    align-items: center;
+    justify-content: space-between;
+
+    & input {
+        height: 60px;
+        width: calc(100% - 200px);
+        margin-left: 32px;
+        line-height: 60px;
+        border: 0;
+        background: 0;
+        color: #333;
+        font-size: 14px;
+        outline: 0;
+    }
+
+    & label {
+        display: flex;
+        height: 23px;
+        line-height: 23px;
+    }
+
+    & .action {
+        margin-right: 17px;
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.settings {
+    display: flex;
+    height: 60px;
+    text-align: right;
+    justify-content: flex-end;
+    align-items: center;
+
+    & .button {
+        position: relative;
+        margin-right: 17px;
+        width: 166px;
+        color: rgba(0, 0, 0, .8);
+        font-size: 14px;
+        padding: 9px 8px;
+        font-family: 'Roboto';
+        border: 0;
+        border-radius: 2px;
+        background: 0;
+        outline: 0;
+        text-transform: uppercase;
+        text-align: left;
+        cursor: pointer;
+        text-decoration: none;
+        transform: translateY(4px);
+        transition: .2s;
+
+        &:hover {
+            background: color(var(--shadow-color) alpha(-50%));
+        }
+    }
+
+
+    & .button i {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+    }
+}
+
+.options {
+    display: inline-block;
+    margin-right: 12px;
+    font-family: 'Roboto';
+    font-size: 14px;
+    color: rgba(0, 0, 0, .8);
+    text-transform: uppercase;
+}
+
+@media (width <= 800px) {
+    .footer {
+        & nav {
+            width: calc(280px - 34px);
+            padding: 14px 17px 0;
+            height: 46px;
+        }
+
+        & nav span {
+            width: 20px;
+            height: 20px;
+        }
+
+        & nav i {
+            font-size: 16px;
+        }
+    }
+
+    .right {
+        width: calc(100% - 280px);
+    }
+
+    .contacts {
+        height: 46px;
+
+        & input {
+            height: 46px;
+            width: calc(100% - 200px);
+            margin-left: 20px;
+            line-height: 46px;
+        }
+    }
+
+    .settings {
+        height: 46px;
+
+        & .button {
+            margin-right: 8px;
+            width: 130px;
+            font-size: 12px;
+            padding: 6px 8px;
+            transform: translateY(0);
+        }
+
+        & .button i {
+            font-size: 16px;
+        }
+    }
+
+    .options {
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,183 @@
+
+.columns {
+    display: flex;
+    padding: 30px 17px 0;
+    justify-content: space-between;
+}
+
+.notfound {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    justify-content: center;
+    align-items: center;
+
+    & h1 {
+        margin-bottom: 25vh;
+        font-family: 'Roboto';
+        font-weight: 100;
+        color: rgba(0, 0, 0, .8);
+        letter-spacing: 2px;
+        word-spacing: 4px;
+    }
+}
+
+.inner {
+    text-align: center;
+
+    & img {
+        width: 220px;
+        margin-bottom: 30px;
+    }
+}
+
+.column {
+    width: 274px;
+}
+
+.group {
+    width: 274px;
+    padding: 8px 0;
+    margin-bottom: 24px;
+    box-shadow: 0 0 10px 0 rgba(119, 119, 119, 50%);
+}
+
+.header {
+    position: relative;
+    width: 140px;
+    height: 36px;
+
+    & label {
+        position: absolute;
+        left: 12px;
+        bottom: 8px;
+        font-family: 'Helvetica Neue';
+        font-size: 24px;
+        font-weight: 300;
+        color: #000;
+    }
+
+    & span {
+        position: absolute;
+        right: 0;
+        bottom: 8px;
+        display: block;
+        font-family: 'Roboto';
+        font-size: 12px;
+        color: #9b9b9b;
+    }
+}
+
+.item {
+    display: flex;
+    height: 40px;
+    margin: 10px 0;
+    padding: 0 10px;
+    align-items: center;
+    cursor: pointer;
+
+    & p {
+        transition: .2s;
+    }
+
+    &:hover p {
+        color: #405de6 !important;
+    }
+
+    & img {
+        margin-top: 3px;
+        margin-right: 19px;
+        border-radius: 32px;
+    }
+}
+
+.avatar,
+.info {
+    display: inline-block;
+}
+
+.username,
+.signature {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.username {
+    font-family: 'Helvetica';
+    font-size: 14px;
+    color: #4a4a4a;
+    margin: 0;
+    margin-bottom: 4px;
+}
+
+.signature {
+    font-family: 'Helvetica';
+    font-size: 12px;
+    color: #777;
+    margin: 0;
+}
+
+@media (width <= 800px) {
+    .columns {
+        padding: 20px 17px 0;
+    }
+
+    .notfound {
+        & h1 {
+            word-spacing: 2px;
+        }
+    }
+
+    .column {
+        width: 230px;
+    }
+
+    .group {
+        width: 230px;
+        padding: 6px 0;
+        margin-bottom: 20px;
+    }
+
+    .header {
+        width: 110px;
+        height: 26px;
+
+        & label {
+            bottom: 6px;
+            font-size: 18px;
+        }
+
+        & span {
+            font-size: 11px;
+        }
+    }
+
+    .item {
+        height: 36px;
+        margin: 8px 0;
+        padding: 0 8px;
+
+        & img {
+            margin-top: 4px;
+            margin-right: 14px;
+        }
+    }
+
+    .avatar img {
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 28px;
+    }
+
+    .username,
+    .signature {
+        max-width: 160px;
+    }
+
+    .username {
+        font-size: 13px;
+        margin-bottom: 2px;
+    }
+}
