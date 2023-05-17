@@ -1,10 +1,10 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Transition from 'react-addons-css-transition-group';
+// import Transition from 'react-addons-css-transition-group';
 import clazz from 'classnames';
 
-import './style.css';
+import './style.css?inline';
 import TransitionPortal from '../TransitionPortal';
 import { on, off } from 'utils/event';
 
@@ -107,13 +107,13 @@ class Modal extends Component {
 
         return (
             <div className="Modal" ref="node">
-                <Transition
+                <div
                     transitionName={this.props.transition4overlay}
                     transitionEnterTimeout={200}
                     transitionLeaveTimeout={200}
                     ref="overlay">
                     {this.renderOverlay()}
-                </Transition>
+                </div>
 
                 <TransitionPortal
                     transitionName={this.props.transition4body}

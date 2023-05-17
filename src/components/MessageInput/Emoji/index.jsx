@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import clazz from 'classnames';
 import delegate from 'delegate';
 
-import classes from './style.css';
+import classes from './style.css?inline';
 import { emoji } from 'utils/emoji';
 
 export default class Emoji extends Component {

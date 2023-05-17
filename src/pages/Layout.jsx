@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import { observer, inject } from 'mobx-react';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
+// import remote from '@electron/remote';
 
-import classes from './Layout.css';
+import classes from './Layout.css?inline';
 import Header from './Header';
 import Footer from './Footer';
 import Login from './Login';
@@ -35,39 +36,17 @@ export default class Layout extends Component {
   };
 
   componentDidMount() {
-    var templates = [
-      {
-        label: 'Undo',
-        role: 'undo',
-      },
-      {
-        label: 'Redo',
-        role: 'redo',
-      },
-      {
-        type: 'separator',
-      },
-      {
-        label: 'Cut',
-        role: 'cut',
-      },
-      {
-        label: 'Copy',
-        role: 'copy',
-      },
-      {
-        label: 'Paste',
-        role: 'paste',
-      },
-      {
-        type: 'separator',
-      },
-      {
-        label: 'Select all',
-        role: 'selectall',
-      },
-    ];
-    var menu = new remote.Menu.buildFromTemplate(templates);
+    // var templates = [
+    //   { label: 'Undo', role: 'undo' },
+    //   { label: 'Redo', role: 'redo' },
+    //   { type: 'separator' },
+    //   { label: 'Cut', role: 'cut' },
+    //   { label: 'Copy', role: 'copy' },
+    //   { label: 'Paste', role: 'paste' },
+    //   { type: 'separator' },
+    //   { label: 'Select all', role: 'selectall' },
+    // ];
+    // var menu = new remote.Menu.buildFromTemplate(templates);
     var canidrag = this.props.canidrag;
 
     document.body.addEventListener('contextmenu', e => {
@@ -77,7 +56,7 @@ export default class Layout extends Component {
 
       while (node) {
         if (node.nodeName.match(/^(input|textarea)$/i) || node.isContentEditable) {
-          menu.popup(remote.getCurrentWindow());
+          // menu.popup(remote.getCurrentWindow());
           break;
         }
         node = node.parentNode;

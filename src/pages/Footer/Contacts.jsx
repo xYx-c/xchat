@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { inject } from 'mobx-react';
 
-import classes from './style.css';
+import classes from './style.css?inline';
 import Switch from 'components/Switch';
 
 @inject(stores => ({

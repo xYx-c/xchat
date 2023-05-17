@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 
-import classes from './style.css';
+import classes from './style.css?inline';
 
 export default class Placeholder extends Component {
     render() {

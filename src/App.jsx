@@ -1,20 +1,19 @@
 import React, { Component } from 'react';
-// import { render } from 'react-dom';
 import { Provider } from 'mobx-react';
-import { HashRouter } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
+// import Router from './routes';
+import getRoutes from './routes';
+import { HashRouter } from 'react-router-dom';
 
 import './global.css';
-// import './assets/fonts/icomoon/style.css';
-import '../public/fonts/icomoon/style.css';
+// import './assets/fonts/icomoo/style.css?inline';
+// import '../public/fonts/icomoon/style.css?inline';
 import './utils/albumcolors';
-import getRoutes from './routes';
 import stores from './stores';
 
 class App extends Component {
   async componentWillMount() {
     if (window.navigator.onLine) {
-      console.log(111112222222222)
       await stores.session.hasLogin();
       await stores.settings.init();
       await stores.search.getHistory();
@@ -132,6 +131,14 @@ class App extends Component {
   }
 
   render() {
+    // return (
+    //   <div className="App">
+    //     <Provider {...stores}>
+    //       <Router />
+    //     </Provider>
+    //   </div>
+    // );
+
     return (
       <Provider {...stores}>
         <HashRouter ref="navigator">{getRoutes()}</HashRouter>

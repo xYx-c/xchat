@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import clazz from 'classnames';
 
-import classes from './style.css';
+import classes from './style.css?inline';
 import Home from './Home';
 import Contacts from './Contacts';
 import Settings from './Settings';

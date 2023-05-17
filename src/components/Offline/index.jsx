@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import classes from './style.css';
+import classes from './style.css?inline';
 
 export default class Avatar extends Component {
     static propTypes = {

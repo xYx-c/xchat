@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import clazz from 'classnames';
 
-import classes from './style.css';
+import classes from './style.css?inline';
 
 export default class UserList extends Component {
     static propTypes = {

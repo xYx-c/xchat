@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 
-import classes from './style.css';
+import classes from './style.css?inline';
 import helper from 'utils/helper';
 
 @inject(stores => ({

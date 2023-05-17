@@ -1,5 +1,5 @@
-
-import storage from 'electron-json-storage';
+import store from 'electron-store';
+const storage = new store();
 
 export default {
     get: (key) => {

@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import clazz from 'classnames';
 import randomColor from 'randomcolor';
 
-import classes from './style.css';
+import classes from './style.css?inline';
 
 @inject(stores => ({
   filter: stores.contacts.filter,

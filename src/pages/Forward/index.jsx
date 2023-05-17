@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Modal, ModalBody } from 'components/Modal';
 import { inject, observer } from 'mobx-react';
 
-import classes from './style.css';
+import classes from './style.css?inline';
 import UserList from 'components/UserList';
 
 @inject(stores => ({

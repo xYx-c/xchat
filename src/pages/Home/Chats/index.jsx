@@ -1,11 +1,11 @@
 
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { remote } from 'electron';
+import remote from '@electron/remote';
 import clazz from 'classnames';
 import moment from 'moment';
 
-import classes from './style.css';
+import classes from './style.css?inline';
 import helper from 'utils/helper';
 
 moment.updateLocale('en', {

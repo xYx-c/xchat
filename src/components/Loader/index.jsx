@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Transition from 'react-addons-css-transition-group';
+// import Transition from 'react-addons-css-transition-group';
 import clazz from 'classnames';
 
 import './style.global.css';
@@ -36,12 +36,12 @@ export default class Button extends Component {
 
   render() {
     return (
-        <Transition
+        <div
             transitionName="Loader"
             transitionEnterTimeout={200}
             transitionLeaveTimeout={200}>
             {this.renderContent()}
-        </Transition>
+        </div>
     );
   }
 }

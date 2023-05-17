@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import Transition from 'react-addons-css-transition-group';
+// import Transition from 'react-addons-css-transition-group';
 
 export default class TransitionPortal extends Component {
     ele;
@@ -13,7 +13,7 @@ export default class TransitionPortal extends Component {
     }
 
     componentDidUpdate() {
-        ReactDOM.render(<Transition {...this.props}>{this.props.children}</Transition>, this.ele);
+        ReactDOM.render(<div {...this.props}>{this.props.children}</div>, this.ele);
     }
 
     componentWillUnmount() {

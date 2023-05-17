@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
+import remote from '@electron/remote';
 import clazz from 'classnames';
 import moment from 'moment';
 import axios from 'axios';
 
-import classes from './style.css';
+import classes from './style.css?inline';
 import Avatar from 'components/Avatar';
 import helper from 'utils/helper';
 import { parser as emojiParse } from 'utils/emoji';

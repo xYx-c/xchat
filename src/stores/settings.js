@@ -1,5 +1,5 @@
 import { observable, action } from 'mobx';
-import { remote, ipcRenderer } from 'electron';
+import remote from '@electron/remote'
 
 import storage from 'utils/storage';
 import helper from 'utils/helper';
@@ -152,5 +152,4 @@ class Settings {
 }
 
 const self = new Settings();
-console.log(self);
 export default self;

@@ -83,15 +83,31 @@ export default defineConfig(({ command }) => {
       // Use Node.js API in the Renderer-process
       renderer(),
     ],
-    server:
-      process.env.VSCODE_DEBUG &&
-      (() => {
-        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
-        return {
-          host: url.hostname,
-          port: +url.port,
-        };
-      })(),
+    // server:
+    //   process.env.VSCODE_DEBUG &&
+    //   (() => {
+    //     const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
+    //     return {
+    //       host: url.hostname,
+    //       port: +url.port,
+    //       proxy: {
+    //         '/api': {
+    //           target: 'https://login.wx.qq.com/',
+    //           changeOrigin: true,
+    //           rewrite: path => path.replace(/^\/api/, ''),
+    //         },
+    //       },
+    //     };
+    //   })(),
+    server: {
+      proxy: {
+        '/api': {
+          target: 'https://login.wx.qq.com/',
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api/, ''),
+        },
+      },
+    },
     clearScreen: false,
   };
 });

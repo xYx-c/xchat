@@ -1,4 +1,5 @@
-import { remote, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
+import remote from '@electron/remote';
 import axios from 'axios';
 // import MD5 from 'browser-md5-file';
 
