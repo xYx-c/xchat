@@ -5,5 +5,5 @@
 ## 快速开始
 
 ```sh
-npm create electron-vite
+yarn dev
 ```
