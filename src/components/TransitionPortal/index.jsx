@@ -1,26 +1,26 @@
-
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-// import Transition from 'react-addons-css-transition-group';
+import Transition from 'react-addons-css-transition-group';
 
 export default class TransitionPortal extends Component {
-    ele;
+  ele;
 
-    componentDidMount() {
-        this.ele = document.createElement('div');
-        document.body.appendChild(this.ele);
-        this.componentDidUpdate();
-    }
+  componentDidMount() {
+    this.ele = document.createElement('div');
+    document.body.appendChild(this.ele);
+    this.componentDidUpdate();
+  }
 
-    componentDidUpdate() {
-        ReactDOM.render(<div {...this.props}>{this.props.children}</div>, this.ele);
-    }
+  componentDidUpdate() {
+    ReactDOM.createPortal(<Transition {...this.props}>{this.props.children}</Transition>, this.ele);
+    // ReactDOM.render(<Transition {...this.props}>{this.props.children}</Transition>, this.ele);
+  }
 
-    componentWillUnmount() {
-        document.body.removeChild(this.ele);
-    }
+  componentWillUnmount() {
+    document.body.removeChild(this.ele);
+  }
 
-    render() {
-        return null;
-    }
+  render() {
+    return null;
+  }
 }

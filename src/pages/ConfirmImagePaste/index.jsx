@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Modal, ModalBody } from 'components/Modal';
 import { inject, observer } from 'mobx-react';
 
-import classes from './style.css?inline';
+import classes from './style.module.scss';
 
 @inject(stores => {
     var confirmImagePaste = stores.confirmImagePaste;
@@ -41,7 +41,7 @@ export default class ConfirmImagePaste extends Component {
     render() {
         var { show, cancel, ok, image } = this.props;
         setTimeout(() => {
-            document.querySelector('#imageInputHidden').focus();
+            if (document.querySelector('#imageInputHidden'))document.querySelector('#imageInputHidden').focus();
         }, 1000);
 
         return (

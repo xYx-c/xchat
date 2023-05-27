@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import './style.global.css';
+import './style.global.scss';
 
 export default class Avatar extends Component {
     static propTypes = {

@@ -1,24 +1,27 @@
-
-import { observable, action } from 'mobx';
+import { observable, action, makeAutoObservable } from 'mobx';
 
 class ConfirmImagePaste {
-    @observable show = false;
-    @observable image;
+  @observable show = false;
+  @observable image;
 
-    ok;
-    cancel;
+  ok;
+  cancel;
 
-    @action toggle(show = self.show, image = self.image) {
-        var promise = new Promise((resolve, reject) => {
-            self.ok = () => resolve(true);
-            self.cancel = () => resolve(false);
-        });
+  constructor() {
+    makeAutoObservable(this);
+  }
 
-        self.show = show;
-        self.image = image;
+  @action toggle(show = self.show, image = self.image) {
+    var promise = new Promise((resolve, reject) => {
+      self.ok = () => resolve(true);
+      self.cancel = () => resolve(false);
+    });
 
-        return promise;
-    }
+    self.show = show;
+    self.image = image;
+
+    return promise;
+  }
 }
 
 const self = new ConfirmImagePaste();

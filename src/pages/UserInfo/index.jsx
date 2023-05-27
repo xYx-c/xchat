@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+// import { withRouter } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
-import pinyin from 'han';
+import { pinyin } from 'pinyin-pro';
 import clazz from 'classnames';
 
-import classes from './style.css?inline';
+import classes from './style.module.scss';
 import Avatar from 'components/Avatar';
 import { Modal, ModalBody } from 'components/Modal';
 import helper from 'utils/helper';
@@ -67,7 +68,7 @@ class UserInfo extends Component {
       this.props.refreshContacts({
         ...this.props.user,
         RemarkName: value,
-        RemarkPYInitial: value ? pinyin.letter(value)[0].toUpperCase() : value,
+        RemarkPYInitial: value ? pinyin(value, { type: 'array', pattern: 'first' })[0].toUpperCase() : value,
       });
       this.toggleEdit(false);
     } else {

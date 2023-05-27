@@ -1,4 +1,15 @@
-import { app, powerMonitor, BrowserWindow, Tray, Menu, ipcMain, clipboard, shell, nativeImage } from 'electron';
+import {
+  app,
+  powerMonitor,
+  BrowserWindow,
+  Tray,
+  Menu,
+  ipcMain,
+  clipboard,
+  shell,
+  nativeImage,
+  session,
+} from 'electron';
 import fs from 'fs';
 import tmp from 'tmp';
 import { release } from 'node:os';
@@ -6,6 +17,7 @@ import { join } from 'node:path';
 import { update } from './update';
 import axios from 'axios';
 import pkg from '../../package.json';
+import { menu, tMenu } from './menu';
 
 const ElectronStore = require('electron-store');
 ElectronStore.initRenderer();
@@ -61,309 +73,8 @@ let avatarPath = tmp.dirSync();
 let avatarCache = {};
 let avatarPlaceholder = `${__dirname}/src/assets/images/user-fallback.png`;
 const icon = `${__dirname}/src/assets/images/dock.png`;
-
-const mainMenu = [
-  {
-    label: pkg.name,
-    submenu: [
-      {
-        label: `About ${pkg.name}`,
-        selector: 'orderFrontStandardAboutPanel:',
-      },
-      {
-        label: 'Preferences...',
-        accelerator: !isOsx ? 'Ctrl+,' : 'Cmd+,',
-        click() {
-          mainWindow.show();
-          mainWindow.webContents.send('show-settings');
-        },
-      },
-      {
-        label: 'messageInput',
-        accelerator: 'Esc',
-        click() {
-          mainWindow.show();
-          mainWindow.webContents.send('show-messageInput');
-        },
-      },
-      {
-        type: 'separator',
-      },
-      {
-        role: 'hide',
-      },
-      {
-        role: 'hideothers',
-      },
-      {
-        role: 'unhide',
-      },
-      {
-        label: 'Check for updates',
-        accelerator: !isOsx ? 'Ctrl+U' : 'Cmd+U',
-        // click() {
-        //     checkForUpdates();
-        // }
-      },
-      {
-        type: 'separator',
-      },
-      {
-        label: 'Quit weweChat',
-        accelerator: !isOsx ? 'Alt+Q' : 'Command+Q',
-        selector: 'terminate:',
-        click() {
-          forceQuit = true;
-          mainWindow = null;
-          app.quit();
-        },
-      },
-    ],
-  },
-  // {
-  //   label: 'File',
-  //   submenu: [
-  //     {
-  //       label: 'New Chat',
-  //       accelerator: !isOsx ? 'Ctrl+N' : 'Cmd+N',
-  //       click() {
-  //         mainWindow.show();
-  //         mainWindow.webContents.send('show-newchat');
-  //       },
-  //     },
-  //     {
-  //       label: 'Search...',
-  //       accelerator: !isOsx ? 'Ctrl+F' : 'Cmd+F',
-  //       click() {
-  //         mainWindow.show();
-  //         mainWindow.webContents.send('show-search');
-  //       },
-  //     },
-  //     {
-  //       label: 'Batch Send Message',
-  //       accelerator: !isOsx ? 'Ctrl+B' : 'Cmd+B',
-  //       click() {
-  //         mainWindow.show();
-  //         mainWindow.webContents.send('show-batchsend');
-  //       },
-  //     },
-  //     {
-  //       type: 'separator',
-  //     },
-  //     {
-  //       label: 'Insert emoji',
-  //       accelerator: !isOsx ? 'Ctrl+I' : 'Cmd+I',
-  //       click() {
-  //         mainWindow.show();
-  //         mainWindow.webContents.send('show-emoji');
-  //       },
-  //     },
-  //     {
-  //       type: 'separator',
-  //     },
-  //     {
-  //       label: 'Next conversation',
-  //       accelerator: !isOsx ? 'Ctrl+J' : 'Cmd+J',
-  //       click() {
-  //         mainWindow.show();
-  //         mainWindow.webContents.send('show-next');
-  //       },
-  //     },
-  //     {
-  //       label: 'Previous conversation',
-  //       accelerator: !isOsx ? 'Ctrl+K' : 'Cmd+K',
-  //       click() {
-  //         mainWindow.show();
-  //         mainWindow.webContents.send('show-previous');
-  //       },
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: 'Conversations',
-  //   submenu: [
-  //     {
-  //       label: 'Loading...',
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: 'Contacts',
-  //   submenu: [
-  //     {
-  //       label: 'Loading...',
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: 'Edit',
-  //   submenu: [
-  //     {
-  //       role: 'undo',
-  //     },
-  //     {
-  //       role: 'redo',
-  //     },
-  //     {
-  //       type: 'separator',
-  //     },
-  //     {
-  //       role: 'cut',
-  //     },
-  //     {
-  //       role: 'copy',
-  //     },
-  //     {
-  //       role: 'paste',
-  //     },
-  //     {
-  //       role: 'pasteandmatchstyle',
-  //     },
-  //     {
-  //       role: 'delete',
-  //     },
-  //     {
-  //       role: 'selectall',
-  //     },
-  //   ],
-  // },
-  {
-    label: 'View',
-    submenu: [
-      {
-        label: isFullScreen ? 'Exit Full Screen' : 'Enter Full Screen',
-        accelerator: !isOsx ? 'Ctrl+Shift+F' : 'Shift+Cmd+F',
-        click() {
-          isFullScreen = !isFullScreen;
-
-          mainWindow.show();
-          mainWindow.setFullScreen(isFullScreen);
-        },
-      },
-      {
-        label: 'Toggle Conversations',
-        accelerator: !isOsx ? 'Ctrl+Shift+M' : 'Shift+Cmd+M',
-        click() {
-          mainWindow.show();
-          mainWindow.webContents.send('show-conversations');
-        },
-      },
-      {
-        type: 'separator',
-      },
-      {
-        label: '',
-      },
-      {
-        type: 'separator',
-      },
-      {
-        role: 'toggledevtools',
-      },
-      {
-        role: 'togglefullscreen',
-      },
-    ],
-  },
-  // {
-  //   role: 'window',
-  //   submenu: [
-  //     {
-  //       role: 'minimize',
-  //     },
-  //     {
-  //       role: 'close',
-  //     },
-  //   ],
-  // },
-  // {
-  //   role: 'help',
-  //   submenu: [
-  //     {
-  //       label: '反馈(不一定解决)',
-  //       click() {
-  //         shell.openExternal('https://github.com/Riceneeder/weweChat/issues');
-  //       },
-  //     },
-  //     {
-  //       label: 'Fork me on Github',
-  //       click() {
-  //         shell.openExternal('https://github.com/Riceneeder/weweChat');
-  //       },
-  //     },
-  //   ],
-  // },
-];
-const trayMenu = [
-  {
-    label: `You have 0 messages`,
-    click() {
-      mainWindow.show();
-      mainWindow.webContents.send('show-messages');
-    },
-  },
-  {
-    label: 'Toggle main window',
-    click() {
-      let isVisible = mainWindow.isVisible();
-      isVisible ? mainWindow.hide() : mainWindow.show();
-    },
-  },
-  {
-    type: 'separator',
-  },
-  {
-    label: 'Preferences...',
-    accelerator: !isOsx ? 'Ctrl+,' : 'Cmd+,',
-    click() {
-      mainWindow.show();
-      mainWindow.webContents.send('show-settings');
-    },
-  },
-  {
-    label: 'Fork me on Github',
-    click() {
-      shell.openExternal('https://github.com/Riceneeder/weweChat');
-    },
-  },
-  {
-    type: 'separator',
-  },
-  {
-    label: 'Toggle DevTools',
-    accelerator: !isOsx ? 'Ctrl+Alt+I' : 'Alt+Command+I',
-    click() {
-      mainWindow.show();
-      mainWindow.toggleDevTools();
-    },
-  },
-  {
-    label: 'Hide menu bar icon',
-    click() {
-      mainWindow.webContents.send('hide-tray');
-    },
-  },
-  {
-    type: 'separator',
-  },
-  {
-    label: 'Check for updates',
-    accelerator: !isOsx ? 'Ctrl+U' : 'Cmd+U',
-    // click() {
-    //     checkForUpdates();
-    // }
-  },
-  {
-    label: 'Quit weweChat',
-    accelerator: !isOsx ? 'Alt+Q' : 'Command+Q',
-    selector: 'terminate:',
-    click() {
-      forceQuit = true;
-      mainWindow = null;
-      app.quit();
-    },
-  },
-];
+let mainMenu = null;
+let trayMenu = null;
 
 async function getIcon(cookies, userid, src) {
   var cached = avatarCache[userid];
@@ -405,68 +116,13 @@ async function getIcon(cookies, userid, src) {
   return image;
 }
 
-async function createWindow() {
-  mainWindow = new BrowserWindow({
-    title: 'Main window',
-    // icon: join(process.env.PUBLIC, 'favicon.ico'),
-    webPreferences: {
-      webSecurity: false,
-      preload,
-      // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
-      // Consider using contextBridge.exposeInMainWorld
-      // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  });
-  require('@electron/remote/main').initialize();
-  require('@electron/remote/main').enable(mainWindow.webContents);
-  if (url) {
-    // electron-vite-vue#298
-    mainWindow.loadURL(url);
-    // Open devTool if the app is not packaged
-    mainWindow.webContents.openDevTools();
-  } else {
-    mainWindow.loadFile(indexHtml);
-  }
-
-  // Test actively push message to the Electron-Renderer
-  mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow?.webContents.send('main-process-message', new Date().toLocaleString());
-  });
-
-  // Make all links open with the browser, not with the application
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https:')) shell.openExternal(url);
-    return { action: 'deny' };
-  });
-
-  // Apply electron-updater
-  update(mainWindow);
-  createMenu();
-}
-
 const createMainWindow = () => {
   // var mainWindowState = windowStateKeeper({
   //   defaultWidth: 745,
   //   defaultHeight: 450,
   // });
 
-  // mainWindow = new BrowserWindow({
-  //   // x: mainWindowState.x,
-  //   // y: mainWindowState.y,
-  //   minWidth: 745,
-  //   minHeight: 450,
-  //   transparent: true,
-  //   titleBarStyle: 'hiddenInset',
-  //   backgroundColor: 'none',
-  //   resizable: true,
-  //   webPreferences: {
-  //     scrollBounce: true,
-  //   },
-  //   frame: !isWin,
-  //   icon,
-  // });
+  // app.commandLine.appendSwitch('disable-web-security');
 
   mainWindow = new BrowserWindow({
     minWidth: 745,
@@ -480,7 +136,8 @@ const createMainWindow = () => {
     title: 'Main window',
     // icon: join(process.env.PUBLIC, 'favicon.ico'),
     webPreferences: {
-      // webSecurity: false,
+      webSecurity: false,
+      enableRemoteModule: true,
       preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
       // Consider using contextBridge.exposeInMainWorld
@@ -489,38 +146,55 @@ const createMainWindow = () => {
       contextIsolation: false,
     },
   });
-  mainWindow.webContents.session.webRequest.onBeforeSendHeaders(
-    { urls: ['https://login.wx.qq.com/'] },
-    (details, callback) => {
-      details.requestHeaders['Origin'] = 'https://login.wx.qq.com/';
-
-      if (details.responseHeaders && details.responseHeaders['Set-Cookie']) {
-        for (let i = 0; i < details.responseHeaders['Set-Cookie'].length; i++) {
-          details.responseHeaders['Set-Cookie'][i] += ';SameSite=None;Secure';
-        }
-      }
-      callback({ cancel: false, requestHeaders: details.requestHeaders });
-    },
+  mainMenu = menu(mainWindow);
+  trayMenu = tMenu(mainWindow);
+  mainWindow.webContents.setUserAgent(
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8',
   );
-  // mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-  //   callback({
-  //     responseHeaders: {
-  //       'Access-Control-Allow-Origin': ['*'],
-  //       ...details.responseHeaders,
-  //     },
-  //   });
-  // });
-  require('@electron/remote/main').initialize();
-  require('@electron/remote/main').enable(mainWindow.webContents);
+  session.defaultSession.webRequest.onBeforeSendHeaders(async (details, callback) => {
+    // details.requestHeaders['referer'] = 'https://wx.qq.com/?&lang=zh_CN&target=t;'
+    delete details.requestHeaders['Referer'];
+    let cookie = await session.defaultSession.cookies
+      .get({ url: 'https://wx.qq.com' })
+      .then(cookie => cookie.map(item => `${item.name}=${item.value}`).join(';'));
+    // 设置cookie
+    if (cookie) details.requestHeaders['Cookie'] = cookie;
+    callback({ cancel: false, requestHeaders: details.requestHeaders });
+  });
+
+  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    // 保存返回头cookie
+    if (details.responseHeaders && details.responseHeaders['Set-Cookie']) {
+      for (let i = 0; i < details.responseHeaders['Set-Cookie'].length; i++) {
+        // details.responseHeaders['Set-Cookie'][i] += ';SameSite=None;Secure';
+        let cookie = details.responseHeaders['Set-Cookie'][i].split(';')[0];
+        let cookieName = cookie.split('=')[0];
+        let cookieValue = cookie.split('=')[1];
+        session.defaultSession.cookies.set({ url: 'https://wx.qq.com', name: cookieName, value: cookieValue });
+        mainWindow.webContents.session.cookies.set({ url: 'https://wx.qq.com', name: cookieName, value: cookieValue });
+      }
+    }
+    callback({
+      responseHeaders: {
+        'Access-Control-Allow-Origin': ['*'],
+        ...details.responseHeaders,
+      },
+    });
+  });
+
+  const remote = require('@electron/remote/main');
+  remote.initialize();
+  remote.enable(mainWindow.webContents);
+
   if (url) {
     // electron-vite-vue#298
     mainWindow.loadURL(url);
     // Open devTool if the app is not packaged
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(indexHtml);
   }
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // Test actively push message to the Electron-Renderer
   mainWindow.webContents.on('did-finish-load', () => {
@@ -535,9 +209,8 @@ const createMainWindow = () => {
 
   // Apply electron-updater
   update(mainWindow);
-  createMenu();
+  // createMenu();
 
-  // mainWindow.setSize(350, 460);
   mainWindow.webContents.on('did-finish-load', () => {
     try {
       mainWindow.show();
@@ -566,7 +239,7 @@ const createMainWindow = () => {
 
     try {
       updateTray();
-      autostart();
+      // autostart();
     } catch (ex) {
       console.error(ex);
     }
@@ -598,7 +271,6 @@ const createMainWindow = () => {
       conversations = await Promise.all(
         conversations.map(async (e, index) => {
           let icon = await getIcon(cookies, e.id, e.avatar);
-
           return {
             label: e.name,
             accelerator: !isOsx ? `Ctrl+${index}` : `Cmd+${index}`,
@@ -735,9 +407,6 @@ const createMainWindow = () => {
     }
   });
 
-  mainWindow.webContents.setUserAgent(
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8',
-  );
   createMenu();
 };
 
@@ -754,16 +423,15 @@ function updateTray(unread = 0) {
     if (tray && updateTray.lastUnread === unread) {
       return;
     }
-
     let contextmenu = Menu.buildFromTemplate(trayMenu);
     let icon = unread
-      ? `${__dirname}/src/assets/images/icon-new-message.png`
-      : `${__dirname}/src/assets/images/icon.png`;
+      ? `${__dirname}/../../src/assets/images/icon-new-message.png`
+      : `${__dirname}/../../src/assets/images/icon.png`;
     // Make sure the last tray has been destroyed
     setTimeout(() => {
       if (!tray) {
         // Init tray icon
-        tray = new Tray(icon);
+        tray = new Tray(nativeImage.createFromPath(icon));
 
         tray.on('right-click', () => {
           tray.popUpContextMenu();
@@ -797,27 +465,27 @@ function updateTray(unread = 0) {
   updateTray.lastUnread = unread;
 }
 
-async function autostart() {
-  var launcher = new AutoLaunch({
-    name: 'weweChat',
-    path: '/Applications/wewechat.app',
-  });
-
-  if (settings.startup) {
-    if (!isOsx) {
-      mainWindow.webContents.send('show-errors', {
-        message: 'Currently only supports the OSX.',
-      });
-      return;
-    }
-
-    launcher.enable().catch(ex => {
-      console.error(ex);
-    });
-  } else {
-    launcher.disable();
-  }
-}
+// async function autostart() {
+//   var launcher = new AutoLaunch({
+//     name: 'weweChat',
+//     path: '/Applications/wewechat.app',
+//   });
+//
+//   if (settings.startup) {
+//     if (!isOsx) {
+//       mainWindow.webContents.send('show-errors', {
+//         message: 'Currently only supports the OSX.',
+//       });
+//       return;
+//     }
+//
+//     launcher.enable().catch(ex => {
+//       console.error(ex);
+//     });
+//   } else {
+//     launcher.disable();
+//   }
+// }
 
 function createMenu() {
   var menu = Menu.buildFromTemplate(mainMenu);
@@ -834,11 +502,11 @@ app.on('before-quit', () => {
   // Fix issues #14
   forceQuit = true;
 });
-app.on('activate', e => {
-  if (!mainWindow.isVisible()) {
-    mainWindow.show();
-  }
-});
+// app.on('activate', e => {
+//   if (!mainWindow.isVisible()) {
+//     mainWindow.show();
+//   }
+// });
 
 // autoUpdater.on('update-not-available', e => {
 //     dialog.showMessageBox({
@@ -893,7 +561,18 @@ app.on('activate', e => {
 // });
 
 // app.whenReady().then(createWindow);
-app.whenReady().then(createMainWindow);
+app.whenReady().then(() => {
+  createMainWindow();
+
+  app.on('activate', () => {
+    const allWindows = BrowserWindow.getAllWindows();
+    if (allWindows.length) {
+      allWindows[0].focus();
+    } else {
+      createMainWindow();
+    }
+  });
+});
 
 // app.setName(pkg.name);
 // app.on('ready', createMainWindow);
@@ -903,22 +582,13 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-app.on('second-instance', () => {
-  if (mainWindow) {
-    // Focus on the main window if the user tried to open another
-    if (mainWindow.isMinimized()) mainWindow.restore();
-    mainWindow.focus();
-  }
-});
-
-app.on('activate', () => {
-  const allWindows = BrowserWindow.getAllWindows();
-  if (allWindows.length) {
-    allWindows[0].focus();
-  } else {
-    createWindow();
-  }
-});
+// app.on('second-instance', () => {
+//   if (mainWindow) {
+//     // Focus on the main window if the user tried to open another
+//     if (mainWindow.isMinimized()) mainWindow.restore();
+//     mainWindow.focus();
+//   }
+// });
 
 // New window example arg: new windows url
 ipcMain.handle('open-win', (_, arg) => {

@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import clazz from 'classnames';
 import randomColor from 'randomcolor';
 
-import classes from './style.css?inline';
+import classes from './style.module.scss';
 
 @inject(stores => ({
   filter: stores.contacts.filter,
@@ -93,3 +93,4 @@ export default class Contacts extends Component {
     );
   }
 }
+

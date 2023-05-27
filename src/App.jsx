@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import { Provider } from 'mobx-react';
 import { ipcRenderer } from 'electron';
-// import Router from './routes';
-import getRoutes from './routes';
-import { HashRouter } from 'react-router-dom';
+import Router from './routes';
 
 import './global.css';
-// import './assets/fonts/icomoo/style.css?inline';
-// import '../public/fonts/icomoon/style.css?inline';
+import './assets/fonts/icomoon/style.css';
 import './utils/albumcolors';
 import stores from './stores';
 
@@ -131,17 +128,9 @@ class App extends Component {
   }
 
   render() {
-    // return (
-    //   <div className="App">
-    //     <Provider {...stores}>
-    //       <Router />
-    //     </Provider>
-    //   </div>
-    // );
-
     return (
       <Provider {...stores}>
-        <HashRouter ref="navigator">{getRoutes()}</HashRouter>
+        <Router />
       </Provider>
     );
   }

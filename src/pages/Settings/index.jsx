@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 
-import classes from './style.css?inline';
+import classes from './style.module.scss';
 import Switch from 'components/Switch';
 import Avatar from 'components/Avatar';
 import helper from 'utils/helper';

@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import remote from '@electron/remote';
+import { session as defaultSession } from '@electron/remote';
 import axios from 'axios';
 // import MD5 from 'browser-md5-file';
 
@@ -147,38 +147,18 @@ const helper = {
   },
 
   getCookie: async name => {
-    var value = {
-      name,
-    };
-    var cookies = remote.getCurrentWindow().webContents.session.cookies;
-
+    let cookies = defaultSession.defaultSession.cookies;
     if (!name) {
-      return new Promise((resolve, reject) => {
-        cookies.get({ url: axios.defaults.baseURL }, (error, cookies) => {
-          let string = '';
-
-          if (error) {
-            return resolve('');
-          }
-
-          for (var i = cookies.length; --i >= 0;) {
-            let item = cookies[i];
-            string += `${item.name}=${item.value} ;`;
-          }
-
-          resolve(string);
-        });
-      });
+      return await cookies
+        .get({ url: axios.defaults.baseURL })
+        .then(cookies => cookies.map(item => `${item.name}=${item.value}`).join(';'));
     }
-
-    return new Promise((resolve, reject) => {
-      cookies.get(value, (err, cookies) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(cookies[0].value);
-        }
-      });
+    return await cookies.get(name).then(cookies => {
+      if (cookies.length) {
+        return cookies[0].value;
+      } else {
+        return '';
+      }
     });
   },
 

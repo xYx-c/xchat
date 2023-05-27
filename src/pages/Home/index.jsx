@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import clazz from 'classnames';
 
-import classes from './style.css?inline';
+import classes from './style.module.scss';
 import Loader from 'components/Loader';
 import SearchBar from './SearchBar';
 import Chats from './Chats';

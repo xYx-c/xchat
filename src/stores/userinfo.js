@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, action, makeAutoObservable } from 'mobx';
 import axios from 'axios';
 
 import session from './session';
@@ -10,6 +10,10 @@ class UserInfo {
   @observable remove = false;
   @observable user = {};
   @observable pallet = [];
+
+  constructor() {
+    makeAutoObservable(this);
+  }
 
   @action async toggle(show = self.show, user = self.user, remove = false) {
     if (user.UserName === session.user.User.UserName) {

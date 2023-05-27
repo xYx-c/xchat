@@ -1,5 +1,6 @@
-import { observable, action } from 'mobx';
-import remote from '@electron/remote'
+import { observable, action, makeAutoObservable } from 'mobx';
+import { app } from '@electron/remote';
+import { ipcRenderer } from 'electron';
 
 import storage from 'utils/storage';
 import helper from 'utils/helper';
@@ -14,6 +15,10 @@ class Settings {
   @observable rememberConversation = false;
   @observable showRedIcon = true;
   @observable downloads = '';
+
+  constructor() {
+    makeAutoObservable(this);
+  }
 
   @action setAlwaysOnTop(alwaysOnTop) {
     self.alwaysOnTop = alwaysOnTop;
@@ -85,7 +90,7 @@ class Settings {
       self.showRedIcon = !!settings.showRedIcon;
       self.downloads = settings.downloads;
     } else {
-      await storage.set('settings', {
+      storage.set('settings', {
         alwaysOnTop,
         showOnTray,
         showNotification,
@@ -103,7 +108,7 @@ class Settings {
     }
 
     if (!self.downloads || typeof self.downloads !== 'string') {
-      self.downloads = remote.app.getPath('downloads');
+      self.downloads = app.getPath('downloads');
     }
 
     self.save();

@@ -26,8 +26,11 @@
     "mobx": "^6.9.0",
     "mobx-react": "^7.6.0",
     "moment": "^2.29.4",
+    "pinyin-pro": "^3.14.0",
     "prop-types": "^15.8.1",
     "randomcolor": "^0.6.2",
+    "react-addons-css-transition-group": "^15.6.2",
+    "react-transition-group": "^4.4.5",
     "tmp": "^0.2.1"
   },
   "devDependencies": {
@@ -42,11 +45,12 @@
     "electron-builder": "^23.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^4.2.2",
+    "react-router-dom": "^6.11.2",
     "sass": "^1.60.0",
     "vite": "^4.3.5",
     "vite-plugin-electron": "^0.11.2",
-    "vite-plugin-electron-renderer": "^0.14.1"
+    "vite-plugin-electron-renderer": "^0.14.1",
+    "vite-plugin-style-modules": "^0.0.10"
   },
   "engines": {
     "node": "^14.18.0 || >=16.0.0"

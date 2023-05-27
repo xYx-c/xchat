@@ -1,6 +1,6 @@
 /* eslint-disable no-eval */
 import axios from 'axios';
-import { observable, action } from 'mobx';
+import { observable, action, makeAutoObservable } from 'mobx';
 
 import helper from 'utils/helper';
 import storage from 'utils/storage';
@@ -8,16 +8,26 @@ import { normalize } from 'utils/emoji';
 import chat from './chat';
 import contacts from './contacts';
 
-
 const CancelToken = axios.CancelToken;
 const headers = {
-  'User-Agent':
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8',
   'client-version': '2.1.4',
   extspam:
     'Go8FCIkFEokFCggwMDAwMDAwMRAGGvAESySibk50w5Wb3uTl2c2h64jVVrV7gNs06GFlWplHQbY/5FfiO++1yH4ykCyNPWKXmco+wfQzK5R98D3so7rJ5LmGFvBLjGceleySrc3SOf2Pc1gVehzJgODeS0lDL3/I/0S2SSE98YgKleq6Uqx6ndTy9yaL9qFxJL7eiA/R3SEfTaW1SBoSITIu+EEkXff+Pv8NHOk7N57rcGk1w0ZzRrQDkXTOXFN2iHYIzAAZPIOY45Lsh+A4slpgnDiaOvRtlQYCt97nmPLuTipOJ8Qc5pM7ZsOsAPPrCQL7nK0I7aPrFDF0q4ziUUKettzW8MrAaiVfmbD1/VkmLNVqqZVvBCtRblXb5FHmtS8FxnqCzYP4WFvz3T0TcrOqwLX1M/DQvcHaGGw0B0y4bZMs7lVScGBFxMj3vbFi2SRKbKhaitxHfYHAOAa0X7/MSS0RNAjdwoyGHeOepXOKY+h3iHeqCvgOH6LOifdHf/1aaZNwSkGotYnYScW8Yx63LnSwba7+hESrtPa/huRmB9KWvMCKbDThL/nne14hnL277EDCSocPu3rOSYjuB9gKSOdVmWsj9Dxb/iZIe+S6AiG29Esm+/eUacSba0k8wn5HhHg9d4tIcixrxveflc8vi2/wNQGVFNsGO6tB5WF0xf/plngOvQ1/ivGV/C1Qpdhzznh0ExAVJ6dwzNg7qIEBaw+BzTJTUuRcPk92Sn6QDn2Pu3mpONaEumacjW4w6ipPnPw+g2TfywJjeEcpSZaP4Q3YV5HG8D6UjWA4GSkBKculWpdCMadx0usMomsSS/74QgpYqcPkmamB4nVv1JxczYITIqItIKjD35IGKAUwAA==',
-  referer: 'https://wx.qq.com/?&lang=zh_CN&target=t',
 };
+
+const http = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 10000,
+});
+http.interceptors.request.use(
+  config => {
+    config.headers = headers;
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  },
+);
 
 class Session {
   @observable loading = true;
@@ -27,25 +37,29 @@ class Session {
   @observable user;
 
   syncKey;
+  // A callback for cancel the sync request
+  cancelCheck = window.Function;
+
+  constructor() {
+    makeAutoObservable(this);
+  }
 
   genSyncKey(list) {
     return (self.syncKey = list.map(e => `${e.Key}_${e.Val}`).join('|'));
   }
 
   @action async getCode() {
-    // const response = await axios.get('https://login.wx.qq.com/jslogin', {
-    const response = await axios('/api/jslogin', {
+    const response = await axios('https://login.wx.qq.com/jslogin', {
+      // const response = await http('/api/jslogin', {
       params: {
         appid: 'wx782c26e4c19acffb',
         fun: 'new',
-        // redirect_uri: 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?mod=desktop',
-        // redirect_uri: 'https://login.wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage',
+        redirect_uri: 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?mod=desktop',
         lang: 'zh_CN',
       },
-      // headers: headers,
+      headers: headers,
     });
-    // var response = await axios.get('https://login.wx.qq.com/jslogin?appid=wx782c26e4c19acffb&redirect_uri=https%3A%2F%2Fwx.qq.com%2Fcgi-bin%2Fmmwebwx-bin%2Fwebwxnewloginpage&fun=new&lang=en_US&_=' + +new Date());
-    console.log(response, 'response');
+    // var response = await axios.get('https://login.wx.qq.com/jslogin?appid=wx782c26e4c19acffb&redirect_uri=https%3A%2F%2Fwx.qq.com%2Fcgi-bin%2Fmmwebwx-bin%2Fwebwxnewloginpage&fun=new&lang=zh_CN&_=' + +new Date());
     var code = response.data.match(/[A-Za-z_\-\d]{10}==/)[0];
 
     self.code = code;
@@ -66,6 +80,7 @@ class Session {
       },
       headers: headers,
     });
+
     eval(response.data);
 
     switch (window.code) {
@@ -105,15 +120,16 @@ class Session {
         }
 
         self.auth = auth;
-        await storage.set('auth', auth);
+        storage.set('auth', auth);
         await self.initUser();
-        self.keepalive().catch(ex => self.logout());
+        // self.keepalive().catch(ex => self.logout());
+        self.keepalive();
         break;
 
       case 201:
         // Confirm to login
         self.avatar = window.userAvatar;
-        self.check();
+        setTimeout(() => self.check(), 1500);
         break;
 
       case 400:
@@ -155,9 +171,9 @@ class Session {
     self.user.ContactList.map(e => {
       e.HeadImgUrl = `${axios.defaults.baseURL}${e.HeadImgUrl.substr(1)}`;
     });
+
     await contacts.getContats();
     await chat.loadChats(self.user.ChatSet);
-
     return self.user;
   }
 
@@ -230,9 +246,6 @@ class Session {
 
     return response.data;
   }
-
-  // A callback for cancel the sync request
-  cancelCheck = window.Function;
 
   checkTimeout(weakup) {
     // Kill the zombie request or duplicate request
@@ -326,13 +339,11 @@ class Session {
   }
 
   @action async hasLogin() {
-    var auth = await storage.get('auth');
-
-    axios.defaults.baseURL = auth.baseURL;
-
+    let auth = storage.get('auth');
     self.auth = auth && Object.keys(auth).length ? auth : void 0;
 
     if (self.auth) {
+      axios.defaults.baseURL = auth.baseURL;
       await self.initUser().catch(ex => self.logout());
       self.keepalive().catch(ex => self.logout());
     }
@@ -354,7 +365,7 @@ class Session {
   }
 
   async exit() {
-    await storage.remove('auth');
+    storage.remove('auth');
     window.location.reload();
   }
 }

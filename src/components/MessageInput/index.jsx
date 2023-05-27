@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { ipcRenderer } from 'electron';
 import clazz from 'classnames';
 
-import classes from './style.css?inline';
+import classes from './style.module.scss';
 import Emoji from './Emoji';
 
 export default class MessageInput extends Component {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import clazz from 'classnames';
 import delegate from 'delegate';
 
-import classes from './style.css?inline';
+import classes from './style.module.scss';
 import { emoji } from 'utils/emoji';
 
 export default class Emoji extends Component {
@@ -47,11 +47,17 @@ export default class Emoji extends Component {
         onBlur={e => this.props.close()}
       >
         <div className={classes.row}>{this.renderEmoji(emoji.slice(0, 15))}</div>
+
         <div className={classes.row}>{this.renderEmoji(emoji.slice(15, 30))}</div>
+
         <div className={classes.row}>{this.renderEmoji(emoji.slice(30, 45))}</div>
+
         <div className={classes.row}>{this.renderEmoji(emoji.slice(45, 60))}</div>
+
         <div className={classes.row}>{this.renderEmoji(emoji.slice(60, 75))}</div>
+
         <div className={classes.row}>{this.renderEmoji(emoji.slice(75, 90))}</div>
+
         <div className={classes.row}>{this.renderEmoji(emoji.slice(90, 105))}</div>
       </div>
     );

@@ -1,9 +1,10 @@
 import { rmSync } from 'node:fs';
-import path from 'node:path';
+import path, { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import electron from 'vite-plugin-electron';
 import renderer from 'vite-plugin-electron-renderer';
+// import viteCssModule from 'vite-plugin-style-modules';
 import pkg from './package.json';
 
 // https://vitejs.dev/config/
@@ -15,6 +16,11 @@ export default defineConfig(({ command }) => {
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
 
   return {
+    css: {
+      modules: {
+        globalModulePaths: [/\.global\.(less|scss|sass|styl|stylus)$/],
+      },
+    },
     build: {
       commonjsOptions: {
         esmExternals: true,
@@ -26,8 +32,9 @@ export default defineConfig(({ command }) => {
         src: path.join(__dirname, 'src'),
         utils: path.join(__dirname, 'src/utils'),
         components: path.join(__dirname, 'src/components'),
-        images: path.join(__dirname, './public/images/'),
-        fonts: path.join(__dirname, './public/fonts/'),
+        assets: path.join(__dirname, 'src/assets'),
+        images: path.join(__dirname, 'src/assets/images'),
+        fonts: path.join(__dirname, 'src/fonts'),
       },
     },
     plugins: [
@@ -39,6 +46,7 @@ export default defineConfig(({ command }) => {
           ],
         },
       }),
+      // viteCssModule(),
       electron([
         {
           // Main-Process entry file of the Electron App.
@@ -83,31 +91,25 @@ export default defineConfig(({ command }) => {
       // Use Node.js API in the Renderer-process
       renderer(),
     ],
-    // server:
-    //   process.env.VSCODE_DEBUG &&
-    //   (() => {
-    //     const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
-    //     return {
-    //       host: url.hostname,
-    //       port: +url.port,
-    //       proxy: {
-    //         '/api': {
-    //           target: 'https://login.wx.qq.com/',
-    //           changeOrigin: true,
-    //           rewrite: path => path.replace(/^\/api/, ''),
-    //         },
-    //       },
-    //     };
-    //   })(),
-    server: {
-      proxy: {
-        '/api': {
-          target: 'https://login.wx.qq.com/',
-          changeOrigin: true,
-          rewrite: path => path.replace(/^\/api/, ''),
-        },
-      },
-    },
+    server:
+      // process.env.VSCODE_DEBUG &&
+      (() => {
+        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
+        return {
+          port: +url.port,
+          proxy: {
+            '/api': {
+              target: 'https://login.wx.qq.com/',
+              changeOrigin: true,
+              rewrite: path => path.replace(/^\/api/, ''),
+            },
+          },
+          open: false,
+          hmr: {
+            overlay: false,
+          },
+        };
+      })(),
     clearScreen: false,
   };
 });

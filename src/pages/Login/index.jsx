@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 
-import classes from './style.css?inline';
+import classes from './style.module.scss';
 
 @inject(stores => ({
   avatar: stores.session.avatar,

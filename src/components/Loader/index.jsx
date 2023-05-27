@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-// import Transition from 'react-addons-css-transition-group';
+import Transition from 'react-addons-css-transition-group';
+// import { Transition } from 'react-transition-group';
 import clazz from 'classnames';
 
-import './style.global.css';
+import classes from './style.module.scss';
 
 export default class Button extends Component {
   static propTypes = {
@@ -23,11 +24,11 @@ export default class Button extends Component {
 
     return (
       <div
-        className={clazz('Loader', this.props.className, {
-          'Loader--fullscreen': this.props.fullscreen,
+        className={clazz(classes['Loader'], this.props.className, {
+          [classes['Loader--fullscreen']]: this.props.fullscreen,
         })}
       >
-        <svg className="Loader-circular">
+        <svg className={classes['Loader-circular']}>
           <circle className="Loader-path" cx="50" cy="50" fill="none" r="20" strokeWidth="5" strokeMiterlimit="10" />
         </svg>
       </div>
@@ -36,12 +37,9 @@ export default class Button extends Component {
 
   render() {
     return (
-        <div
-            transitionName="Loader"
-            transitionEnterTimeout={200}
-            transitionLeaveTimeout={200}>
-            {this.renderContent()}
-        </div>
+      <Transition transitionName="Loader" transitionEnterTimeout={200} transitionLeaveTimeout={200}>
+        {this.renderContent()}
+      </Transition>
     );
   }
 }

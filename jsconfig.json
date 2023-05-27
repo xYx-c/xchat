@@ -3,8 +3,8 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "allowJs": false,
     "skipLibCheck": true,
+    "allowJs": true,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -14,7 +14,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
       "utils/*": ["src/utils/*"],
@@ -22,5 +22,6 @@
     }
   },
   "include": ["src", "electron"],
+  "exclude": ["node_modules", "build", "dist", "electron", "src/**/*.spec.ts", "src/**/*.test.ts", "src/**/*.spec.tsx", "src/**/*.test.tsx"],
   "references": [{ "path": "./jsconfig.node.json" }]
 }

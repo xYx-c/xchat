@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { ipcRenderer } from 'electron';
-import remote from '@electron/remote';
 import clazz from 'classnames';
 import moment from 'moment';
 import axios from 'axios';
+import { Menu, getCurrentWindow } from '@electron/remote';
 
-import classes from './style.css?inline';
+import classes from './style.module.scss';
 import Avatar from 'components/Avatar';
 import helper from 'utils/helper';
 import { parser as emojiParse } from 'utils/emoji';
@@ -438,9 +438,9 @@ export default class ChatContent extends Component {
         },
       },
     ];
-    var menu = new remote.Menu.buildFromTemplate(templates);
+    var menu = new Menu.buildFromTemplate(templates);
 
-    menu.popup(remote.getCurrentWindow());
+    menu.popup(getCurrentWindow());
   }
 
   showMessageAction(message) {
@@ -475,13 +475,13 @@ export default class ChatContent extends Component {
 
     if (message.uploading) return;
 
-    menu = new remote.Menu.buildFromTemplate(templates);
-    menu.popup(remote.getCurrentWindow());
+    menu = new Menu.buildFromTemplate(templates);
+    menu.popup(getCurrentWindow());
   }
 
   showMenu() {
     var user = this.props.user;
-    var menu = new remote.Menu.buildFromTemplate([
+    var menu = new Menu.buildFromTemplate([
       {
         label: 'Toggle the conversation',
         click: () => {
@@ -514,7 +514,7 @@ export default class ChatContent extends Component {
       },
     ]);
 
-    menu.popup(remote.getCurrentWindow());
+    menu.popup(getCurrentWindow());
   }
 
   handleScroll(e) {
