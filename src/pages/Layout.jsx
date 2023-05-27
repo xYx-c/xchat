@@ -144,7 +144,7 @@ export default class Layout extends Component {
     return (
       <>
         <Snackbar close={close} show={show} text={message} />
-        <Loader show={loading} />
+        {/* <Loader show={loading} /> */}
         <Header location={location} />
         <div className={classes.container} ref="viewport">
           {this.props.children}
