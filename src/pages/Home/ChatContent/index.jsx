@@ -657,7 +657,7 @@ export default class ChatContent extends Component {
               [classes.noselected]: !user,
             })}
           >
-            <img className="disabledDrag" src="assets/images/noselected.png" />
+            <img className="disabledDrag" src={helper.getImageUrl('../assets/images/noselected.png')} />
             <h1>No Chat selected :(</h1>
           </div>
         )}

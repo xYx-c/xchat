@@ -15,20 +15,6 @@ const headers = {
     'Go8FCIkFEokFCggwMDAwMDAwMRAGGvAESySibk50w5Wb3uTl2c2h64jVVrV7gNs06GFlWplHQbY/5FfiO++1yH4ykCyNPWKXmco+wfQzK5R98D3so7rJ5LmGFvBLjGceleySrc3SOf2Pc1gVehzJgODeS0lDL3/I/0S2SSE98YgKleq6Uqx6ndTy9yaL9qFxJL7eiA/R3SEfTaW1SBoSITIu+EEkXff+Pv8NHOk7N57rcGk1w0ZzRrQDkXTOXFN2iHYIzAAZPIOY45Lsh+A4slpgnDiaOvRtlQYCt97nmPLuTipOJ8Qc5pM7ZsOsAPPrCQL7nK0I7aPrFDF0q4ziUUKettzW8MrAaiVfmbD1/VkmLNVqqZVvBCtRblXb5FHmtS8FxnqCzYP4WFvz3T0TcrOqwLX1M/DQvcHaGGw0B0y4bZMs7lVScGBFxMj3vbFi2SRKbKhaitxHfYHAOAa0X7/MSS0RNAjdwoyGHeOepXOKY+h3iHeqCvgOH6LOifdHf/1aaZNwSkGotYnYScW8Yx63LnSwba7+hESrtPa/huRmB9KWvMCKbDThL/nne14hnL277EDCSocPu3rOSYjuB9gKSOdVmWsj9Dxb/iZIe+S6AiG29Esm+/eUacSba0k8wn5HhHg9d4tIcixrxveflc8vi2/wNQGVFNsGO6tB5WF0xf/plngOvQ1/ivGV/C1Qpdhzznh0ExAVJ6dwzNg7qIEBaw+BzTJTUuRcPk92Sn6QDn2Pu3mpONaEumacjW4w6ipPnPw+g2TfywJjeEcpSZaP4Q3YV5HG8D6UjWA4GSkBKculWpdCMadx0usMomsSS/74QgpYqcPkmamB4nVv1JxczYITIqItIKjD35IGKAUwAA==',
 };
 
-const http = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  timeout: 10000,
-});
-http.interceptors.request.use(
-  config => {
-    config.headers = headers;
-    return config;
-  },
-  error => {
-    return Promise.reject(error);
-  },
-);
-
 class Session {
   @observable loading = true;
   @observable auth;
@@ -50,7 +36,6 @@ class Session {
 
   @action async getCode() {
     const response = await axios('https://login.wx.qq.com/jslogin', {
-      // const response = await http('/api/jslogin', {
       params: {
         appid: 'wx782c26e4c19acffb',
         fun: 'new',
@@ -121,8 +106,8 @@ class Session {
 
         self.auth = auth;
         storage.set('auth', auth);
+
         await self.initUser();
-        // self.keepalive().catch(ex => self.logout());
         self.keepalive();
         break;
 
@@ -155,7 +140,7 @@ class Session {
       },
     );
 
-    await axios.post(`/cgi-bin/mmwebwx-bin/webwxstatusnotify?lang=en_US&pass_ticket=${self.auth.passTicket}`, {
+    axios.post(`/cgi-bin/mmwebwx-bin/webwxstatusnotify?lang=en_US&pass_ticket=${self.auth.passTicket}`, {
       BaseRequest: {
         Sid: self.auth.wxsid,
         Uin: self.auth.wxuin,
@@ -168,10 +153,10 @@ class Session {
     });
 
     self.user = response.data;
+
     self.user.ContactList.map(e => {
       e.HeadImgUrl = `${axios.defaults.baseURL}${e.HeadImgUrl.substr(1)}`;
     });
-
     await contacts.getContats();
     await chat.loadChats(self.user.ChatSet);
     return self.user;
@@ -276,11 +261,11 @@ class Session {
       },
     );
     var host = axios.defaults.baseURL.replace('//', '//webpush.');
-    var loop = async () => {
+    const loop = async () => {
       // Start detect timeout
       self.checkTimeout();
 
-      var response = await axios
+      const response = await axios
         .get(`${host}cgi-bin/mmwebwx-bin/synccheck`, {
           cancelToken: new CancelToken(exe => {
             // An executor function receives a cancel function as a parameter
@@ -295,19 +280,29 @@ class Session {
           },
         })
         .catch(ex => {
-          if (axios.isCancel(ex)) {
-            loop();
-          } else {
-            self.logout();
-          }
+          // if (axios.isCancel(ex)) {
+          //   loop();
+          // } else {
+          sleep(30 * 1000);
+          console.log(ex, 'synccheck error');
+          return loop();
+          // setTimeout(() => loop(), 30 * 1000);
+          // }
         });
 
-      if (!response) {
-        // Request has been canceled
-        return;
+      if (response && response.data.includes('notifyid')) {
+        return self.logout();
       }
 
-      eval(response.data);
+      if (response && response.data) {
+        eval(response.data);
+      }
+      // const retcode = response.data.match(/retcode:"(\d+)"/)[1];
+      // const selector = response.data.match(/selector:"(\d+)"/)[1];
+
+      if (+window.synccheck.retcode == 1102) {
+        return self.logout();
+      }
 
       if (+window.synccheck.retcode === 0) {
         // 2, Has new message
@@ -318,13 +313,14 @@ class Session {
 
         if (selector !== 0) {
           await self.getNewMessage();
+          // .catch(() => {
+          //   self.getNewMessage();
+          // });
         }
 
         // Do next sync keep your wechat alive
-        return loop();
-      } else {
-        self.logout();
       }
+      return loop();
     };
 
     // Load the rencets chats
@@ -332,23 +328,19 @@ class Session {
       await chat.loadChats(e.StatusNotifyUserName);
     });
 
-    self.loading = false;
     self.genSyncKey(response.data.SyncCheckKey.List);
-
+    self.loading = false;
     return loop();
   }
 
   @action async hasLogin() {
-    let auth = storage.get('auth');
-    self.auth = auth && Object.keys(auth).length ? auth : void 0;
-
+    self.auth = storage.get('auth');
     if (self.auth) {
-      axios.defaults.baseURL = auth.baseURL;
-      await self.initUser().catch(ex => self.logout());
-      self.keepalive().catch(ex => self.logout());
+      axios.defaults.baseURL = self.auth.baseURL;
+      await self.initUser();
+      // self.keepalive().catch(() => self.logout());
+      self.keepalive();
     }
-
-    return auth;
   }
 
   @action async logout() {
@@ -365,6 +357,7 @@ class Session {
   }
 
   async exit() {
+    storage.remove('cookies');
     storage.remove('auth');
     window.location.reload();
   }

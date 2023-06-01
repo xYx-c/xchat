@@ -66,8 +66,8 @@ class Settings {
   }
 
   @action async init() {
-    var settings = await storage.get('settings');
-    var {
+    let settings = storage.get('settings');
+    let {
       alwaysOnTop,
       showOnTray,
       showNotification,

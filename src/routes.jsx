@@ -16,28 +16,21 @@ function withRouter(Component) {
 const Main = withRouter(props => <Layout {...props} />);
 const routes = [
   {
-    path: '/',
-    element: (
-      <Main>
-        <Home />
-      </Main>
-    ),
-  },
-  {
-    path: '/contacts',
-    Element: (
-      <Main>
-        <Contacts />
-      </Main>
-    ),
-  },
-  {
-    path: '/settings',
-    Element: (
-      <Main>
-        <Settings />
-      </Main>
-    ),
+    element: <Main />,
+    children: [
+      {
+        path: '/',
+        element: <Home />,
+      },
+      {
+        path: '/contacts',
+        element: <Contacts />,
+      },
+      {
+        path: '/settings',
+        element: <Settings />,
+      },
+    ],
   },
 ];
 export default () => useRoutes(routes);

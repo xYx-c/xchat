@@ -59,15 +59,14 @@ class Contacts {
   }
 
   @action async getUser(userid) {
-    var user = self.memberList.find(e => e.UserName === userid);
-
+    let user = self.memberList.find(e => e.UserName === userid);
     if (user) {
       return user;
+    } else {
+      await self.batch([userid]);
+      user = await self.getUser(userid);
+      return user;
     }
-
-    await self.batch([userid]);
-    user = await self.getUser(userid);
-    return user;
   }
 
   @action async getContats() {
@@ -75,7 +74,10 @@ class Contacts {
 
     var auth = await storage.get('auth');
     var me = session.user.User;
-    var response = await axios.get('/cgi-bin/mmwebwx-bin/webwxgetcontact', {
+    // if (storage.get('memberList') instanceof Array && storage.get('memberList').length) {
+    //   self.memberList = storage.get('memberList');
+    // } else {
+    const response = await axios.get('/cgi-bin/mmwebwx-bin/webwxgetcontact', {
       params: {
         r: +new Date(),
         seq: 0,
@@ -86,6 +88,8 @@ class Contacts {
     self.memberList = response.data.MemberList.filter(
       e => helper.isContact(e) && !helper.isOfficial(e) && !helper.isBrand(e),
     ).concat(me);
+    // storage.set('memberList', self.memberList);
+    // }
 
     self.memberList.map(e => {
       e.MemberList = [];
@@ -94,7 +98,7 @@ class Contacts {
 
     self.loading = false;
     self.filtered.result = self.group(self.memberList);
-    return (window.list = self.memberList);
+    return self.memberList;
   }
 
   resolveUser(auth, user) {
@@ -139,9 +143,10 @@ class Contacts {
   }
 
   // Batch get the contacts
+  // 批量获取联系人
   async batch(list) {
-    var auth = await storage.get('auth');
-    var response = await axios.post(`/cgi-bin/mmwebwx-bin/webwxbatchgetcontact?type=ex&r=${+new Date()}`, {
+    let auth = storage.get('auth');
+    const response = await axios.post(`/cgi-bin/mmwebwx-bin/webwxbatchgetcontact?type=ex&r=${+new Date()}`, {
       BaseRequest: {
         Sid: auth.wxsid,
         Uin: auth.wxuin,
@@ -176,7 +181,7 @@ class Contacts {
       if (shouldUpdate) {
         // Update contact in menu
         ipcRenderer.send('menu-update', {
-          contacts: JSON.stringify(self.memberList.filter(e => helper.isContact(e))) || [],
+          contacts: JSON.parse(JSON.stringify(self.memberList.filter(e => helper.isContact(e)))),
           cookies: await helper.getCookie(),
         });
       }
@@ -220,7 +225,7 @@ class Contacts {
 
     // Update contact in menu
     ipcRenderer.send('menu-update', {
-      contacts: JSON.stringify(self.memberList.filter(e => helper.isContact(e))) || [],
+      contacts: self.memberList.filter(e => helper.isContact(e)) || [],
       cookies: await helper.getCookie(),
     });
   }

@@ -193,16 +193,12 @@ function hasUnreadMessage(messages) {
 
 async function updateMenus({ conversations = [], contacts = [] }) {
   ipcRenderer.send('menu-update', {
-    conversations: conversations.map(e => ({
-      id: e.UserName,
-      name: e.RemarkName || e.NickName,
-      avatar: e.HeadImgUrl,
-    })),
+    conversations: conversations.map(e => ({ id: e.UserName, name: e.RemarkName || e.NickName, avatar: e.HeadImgUrl })),
     contacts: contacts.map(e => ({
       id: e.UserName,
       name: e.RemarkName || e.NickName,
       avatar: e.HeadImgUrl,
-    }))|| [],
+    })),
     cookies: await helper.getCookie(),
   });
 }
@@ -217,6 +213,10 @@ class Chat {
     makeAutoObservable(this);
   }
 
+  // @action saveMessages() {
+  //   storage.set('messages', self.messages);
+  // }
+
   @action toggleConversation(show = !self.showConversation) {
     self.showConversation = show;
   }
@@ -227,9 +227,9 @@ class Chat {
     var temps = [];
     var sorted = [];
     if (!chatSet) return;
-    
+
     helper.unique(chatSet.split(',')).map(e => {
-      var user = list.find(user => user.UserName === e && !helper.isChatRoom(e));
+      let user = list.find(user => user.UserName === e && !helper.isChatRoom(e));
       if (user) {
         res.push(user);
       } else {
@@ -251,7 +251,7 @@ class Chat {
 
     res.map((e, index) => {
       self.messages.set(e.UserName, {
-        data: [],
+        data: self.messages.get(e.UserName)?.data || [],
         unread: 0,
       });
 
@@ -264,7 +264,7 @@ class Chat {
         sorted.push(e);
       }
     });
-    
+
     self.sessions.replace(sorted);
     updateMenus({
       conversations: self.sessions.slice(0, 10),
@@ -310,7 +310,7 @@ class Chat {
       sessions = [user, ...self.sessions];
 
       self.messages.set(user.UserName, {
-        data: [],
+        data: self.messages.get(user.UserName)?.data || [],
         unread: 0,
       });
     } else {
@@ -339,14 +339,12 @@ class Chat {
   }
 
   @action async addMessage(message, sync = false) {
-    /* eslint-disable */
     var from = message.FromUserName;
     var user = await contacts.getUser(from);
     var list = self.messages.get(from);
     var sessions = self.sessions;
     var stickyed = [];
     var normaled = [];
-    /* eslint-enable */
 
     if (!user) {
       return console.error('Got an invalid message: %o', message);

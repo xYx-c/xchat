@@ -12,6 +12,8 @@ const CONTACTFLAG_TOPCONTACT = 2048;
 const CONTACTFLAG_CONTACT = 1;
 
 const helper = {
+  getImageUrl: path => new URL(path, import.meta.url).href,
+
   isContact: user => {
     if (helper.isFileHelper(user)) return true;
 
@@ -98,6 +100,9 @@ const helper = {
 
     return res;
   },
+  // unique: arr => {
+  //   return Array.from(new Set(arr));
+  // },
 
   getMessageContent: message => {
     var isChatRoom = helper.isChatRoom(message.FromUserName);

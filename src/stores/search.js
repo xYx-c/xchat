@@ -1,5 +1,5 @@
 import { observable, action, makeAutoObservable } from 'mobx';
-import pinyin from 'han';
+import { pinyin } from 'pinyin-pro';
 
 import contacts from './contacts';
 import storage from 'utils/storage';
@@ -23,13 +23,13 @@ class Search {
     var groups = [];
     var friend = [];
 
-    text = pinyin.letter(text.toLocaleLowerCase());
+    text = pinyin(text.toLocaleLowerCase());
 
     list = contacts.memberList.filter(e => {
-      var res = pinyin.letter(e.NickName).toLowerCase().indexOf(text) > -1;
+      var res = pinyin(e.NickName).toLowerCase().indexOf(text) > -1;
 
       if (e.RemarkName) {
-        res = res || pinyin.letter(e.RemarkName).toLowerCase().indexOf(text) > -1;
+        res = res || pinyin(e.RemarkName).toLowerCase().indexOf(text) > -1;
       }
 
       return res;
@@ -83,16 +83,16 @@ class Search {
   }
 
   @action async getHistory() {
-    var list = await storage.get('history') || [];
-    var history = [];
-
-    Array.from(list).map(e => {
-      var user = contacts.memberList.find(user => user.UserName === e.UserName);
-
-      if (user) {
-        history.push(user);
-      }
-    });
+    let list = storage.get('history');
+    let history = [];
+    // if (list instanceof Array) {
+      list.map(e => {
+        let user = contacts.memberList.find(user => user.UserName === e.UserName);
+        if (user) {
+          history.push(user);
+        }
+      });
+    // }
 
     storage.set('history', history);
     self.history.replace(history);

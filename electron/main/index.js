@@ -19,8 +19,8 @@ import axios from 'axios';
 import pkg from '../../package.json';
 import { menu, tMenu } from './menu';
 
-const ElectronStore = require('electron-store');
-ElectronStore.initRenderer();
+const storage = require('electron-store');
+const store = new storage();
 
 // The built directory structure
 //
@@ -71,8 +71,8 @@ let imagesCacheDir = `${userData}/images`;
 let voicesCacheDir = `${userData}/voices`;
 let avatarPath = tmp.dirSync();
 let avatarCache = {};
-let avatarPlaceholder = `${__dirname}/src/assets/images/user-fallback.png`;
-const icon = `${__dirname}/src/assets/images/dock.png`;
+let avatarPlaceholder = `${__dirname}/../../src/assets/images/user-fallback.png`;
+const icon = `${__dirname}/../../src/assets/images/dock.png`;
 let mainMenu = null;
 let trayMenu = null;
 
@@ -102,14 +102,12 @@ async function getIcon(cookies, userid, src) {
       icon = `${avatarPath.name}/${userid}.jpg`;
       fs.writeFileSync(icon, base64.replace(/^data:image\/png;base64,/, ''), 'base64');
     } catch (ex) {
-      console.error(ex);
+      // console.error(ex);
       icon = avatarPlaceholder;
     }
   }
 
-  var image = nativeImage.createFromPath(icon);
-
-  image = image.resize({ width: 24, height: 24 });
+  let image = nativeImage.createFromPath(icon).resize({ width: 24, height: 24 });
 
   avatarCache[userid] = image;
 
@@ -148,39 +146,57 @@ const createMainWindow = () => {
   });
   mainMenu = menu(mainWindow);
   trayMenu = tMenu(mainWindow);
+
+  storage.initRenderer();
+
   mainWindow.webContents.setUserAgent(
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8',
   );
-  session.defaultSession.webRequest.onBeforeSendHeaders(async (details, callback) => {
+
+  const filter = { urls: ['https://login.wx.qq.com/*', 'https://wx.qq.com/*', 'https://webpush.wx.qq.com/*'] };
+
+  session.defaultSession.webRequest.onBeforeSendHeaders(filter, async (details, callback) => {
     // details.requestHeaders['referer'] = 'https://wx.qq.com/?&lang=zh_CN&target=t;'
     delete details.requestHeaders['Referer'];
     let cookie = await session.defaultSession.cookies
       .get({ url: 'https://wx.qq.com' })
       .then(cookie => cookie.map(item => `${item.name}=${item.value}`).join(';'));
-    // 设置cookie
-    if (cookie) details.requestHeaders['Cookie'] = cookie;
+    if (!cookie) {
+      let cookies = store.get('cookies');
+      // let cookie = '';
+      if (cookies instanceof Object) {
+        cookie = Object.values(cookies)
+          .map(item => `${item.name}=${item.value}`)
+          .join(';');
+      }
+    }
+    details.requestHeaders['Cookie'] = cookie || '';
     callback({ cancel: false, requestHeaders: details.requestHeaders });
   });
 
-  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    // 保存返回头cookie
-    if (details.responseHeaders && details.responseHeaders['Set-Cookie']) {
-      for (let i = 0; i < details.responseHeaders['Set-Cookie'].length; i++) {
-        // details.responseHeaders['Set-Cookie'][i] += ';SameSite=None;Secure';
-        let cookie = details.responseHeaders['Set-Cookie'][i].split(';')[0];
-        let cookieName = cookie.split('=')[0];
-        let cookieValue = cookie.split('=')[1];
-        session.defaultSession.cookies.set({ url: 'https://wx.qq.com', name: cookieName, value: cookieValue });
-        mainWindow.webContents.session.cookies.set({ url: 'https://wx.qq.com', name: cookieName, value: cookieValue });
+  mainWindow.webContents.session.webRequest.onHeadersReceived(
+    // { urls: ['https://wx.qq.com/*'] },
+    (details, callback) => {
+      // 保存返回头cookie
+      if (details.responseHeaders && details.responseHeaders['Set-Cookie']) {
+        let cookies = store.get('cookies') instanceof Object ? store.get('cookies') : {};
+        for (let i = 0; i < details.responseHeaders['Set-Cookie'].length; i++) {
+          let cookie = details.responseHeaders['Set-Cookie'][i].split(';')[0];
+          let cookieName = cookie.split('=')[0];
+          let cookieValue = cookie.split('=')[1];
+          session.defaultSession.cookies.set({ url: 'https://wx.qq.com', name: cookieName, value: cookieValue });
+          cookies[cookieName] = { url: 'https://wx.qq.com', name: cookieName, value: cookieValue };
+        }
+        if (Object.keys(cookies).length > 0) store.set('cookies', cookies);
       }
-    }
-    callback({
-      responseHeaders: {
-        'Access-Control-Allow-Origin': ['*'],
-        ...details.responseHeaders,
-      },
-    });
-  });
+      callback({
+        responseHeaders: {
+          // 'Access-Control-Allow-Origin': ['*'],
+          ...details.responseHeaders,
+        },
+      });
+    },
+  );
 
   const remote = require('@electron/remote/main');
   remote.initialize();
@@ -194,7 +210,6 @@ const createMainWindow = () => {
   } else {
     mainWindow.loadFile(indexHtml);
   }
-  // mainWindow.webContents.openDevTools();
 
   // Test actively push message to the Electron-Renderer
   mainWindow.webContents.on('did-finish-load', () => {
@@ -286,7 +301,7 @@ const createMainWindow = () => {
       );
       conversationsMenu.submenu = conversations;
     }
-    if (contacts.length) {
+    if (contacts && contacts instanceof Array && contacts.length) {
       shouldUpdate = true;
 
       contacts = await Promise.all(
@@ -560,7 +575,6 @@ app.on('before-quit', () => {
 //     });
 // });
 
-// app.whenReady().then(createWindow);
 app.whenReady().then(() => {
   createMainWindow();
 

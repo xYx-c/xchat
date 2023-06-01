@@ -1,6 +1,5 @@
 .container {
   width: 100%;
-  height: 100vh;
 }
 
 .chats {
@@ -94,13 +93,13 @@
 
   &.green::after {
     content: '';
-    background: url(../../../../assets/images/messageGreen.png) 0 0 no-repeat;
+    background: url(../../../../src/assets/images/messageGreen.png) 0 0 no-repeat;
     background-size: 100% 100%;
   }
 
   &.red::after {
     content: '';
-    background: url(../../../../assets/images/messageRed.png) 0 0 no-repeat;
+    background: url(../../../../src/assets/images/messageRed.png) 0 0 no-repeat;
     background-size: 100% 100%;
   }
 }

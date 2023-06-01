@@ -30,7 +30,7 @@ export default class Avatar extends Component {
                 className={`Avatar fade fadein ${this.props.className}`}
                 onClick={this.props.onClick}
                 onLoad={e => this.handleLoad(e)}
-                onError={e => this.handleError(e)}
+                // onError={e => this.handleError(e)}
                 src={this.props.src}
             />
         );

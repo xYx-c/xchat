@@ -88,7 +88,7 @@ export default class Chats extends Component {
 
   componentDidUpdate() {
     var container = this.refs.container;
-    var active = container.querySelector(`.${classes.chat}.${classes.active}`);
+    var active = container?.querySelector(`.${classes.chat}.${classes.active}`);
 
     if (active) {
       let rect4active = active.getBoundingClientRect();
@@ -105,6 +105,7 @@ export default class Chats extends Component {
     var { loading, chats, selected, chatTo, searching } = this.props;
 
     if (loading) return false;
+    if (chats.length === 0) return false;
 
     return (
       <div className={classes.container}>
@@ -134,7 +135,7 @@ export default class Chats extends Component {
                       <img
                         className="disabledDrag"
                         src={e.HeadImgUrl}
-                        onError={e => (e.target.src = 'assets/images/user-fallback.png')}
+                        onError={e => (e.target.src = helper.getImageUrl('../assets/images/user-fallback.png'))}
                       />
                     </div>
 
