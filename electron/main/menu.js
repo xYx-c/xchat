@@ -121,22 +121,22 @@ export const menu = mainWindow => [
       },
     ],
   },
-  {
-    label: 'Conversations',
-    submenu: [
-      {
-        label: 'Loading...',
-      },
-    ],
-  },
-  {
-    label: 'Contacts',
-    submenu: [
-      {
-        label: 'Loading...',
-      },
-    ],
-  },
+  // {
+  //   label: 'Conversations',
+  //   submenu: [
+  //     {
+  //       label: 'Loading...',
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: 'Contacts',
+  //   submenu: [
+  //     {
+  //       label: 'Loading...',
+  //     },
+  //   ],
+  // },
   {
     label: 'Edit',
     submenu: [
@@ -218,23 +218,23 @@ export const menu = mainWindow => [
       },
     ],
   },
-  {
-    role: 'help',
-    submenu: [
-      {
-        label: '反馈(不一定解决)',
-        click() {
-          shell.openExternal('https://github.com/Riceneeder/weweChat/issues');
-        },
-      },
-      {
-        label: 'Fork me on Github',
-        click() {
-          shell.openExternal('https://github.com/Riceneeder/weweChat');
-        },
-      },
-    ],
-  },
+  // {
+  //   role: 'help',
+  //   submenu: [
+  //     {
+  //       label: '反馈(不一定解决)',
+  //       click() {
+  //         shell.openExternal('https://github.com/Riceneeder/weweChat/issues');
+  //       },
+  //     },
+  //     {
+  //       label: 'Fork me on Github',
+  //       click() {
+  //         shell.openExternal('https://github.com/Riceneeder/weweChat');
+  //       },
+  //     },
+  //   ],
+  // },
 ];
 export const tMenu = mainWindow => [
   {

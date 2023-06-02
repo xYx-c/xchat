@@ -36,6 +36,7 @@ process.env.DIST_ELECTRON = join(__dirname, '../');
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist');
 process.env.PUBLIC = process.env.VITE_DEV_SERVER_URL ? join(process.env.DIST_ELECTRON, '../public') : process.env.DIST;
 
+
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
 
@@ -96,7 +97,6 @@ async function getIcon(cookies, userid, src) {
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8',
         },
       });
-      // eslint-disable-next-line
       let base64 = new Buffer(response.data, 'binary').toString('base64');
 
       icon = `${avatarPath.name}/${userid}.jpg`;
@@ -267,70 +267,69 @@ const createMainWindow = () => {
     }
   });
 
-  ipcMain.on('menu-update', async (event, args) => {
-    var { cookies, contacts = [], conversations = [] } = args;
-    var conversationsMenu = mainMenu.find(e => e.label === 'Conversations');
-    var contactsMenu = mainMenu.find(e => e.label === 'Contacts');
-    var shouldUpdate = false;
-
-    // if (!isOsx) {
-    //     return;
-    // }
-
-    if (
-      conversations.length &&
-      conversations.map(e => e.name).join() !== conversationsMenu.submenu.map(e => e.label).join()
-    ) {
-      shouldUpdate = true;
-
-      conversations = await Promise.all(
-        conversations.map(async (e, index) => {
-          let icon = await getIcon(cookies, e.id, e.avatar);
-          return {
-            label: e.name,
-            accelerator: !isOsx ? `Ctrl+${index}` : `Cmd+${index}`,
-            icon,
-            click() {
-              mainWindow.show();
-              mainWindow.webContents.send('message-chatto', {
-                id: e.id,
-              });
-            },
-          };
-        }),
-      );
-      conversationsMenu.submenu = conversations;
-    }
-    if (contacts && contacts instanceof Array && contacts.length) {
-      shouldUpdate = true;
-
-      contacts = await Promise.all(
-        contacts.map(async e => {
-          let icon = await getIcon(cookies, e.id, e.avatar);
-
-          return {
-            label: e.name,
-            icon,
-            click() {
-              mainWindow.show();
-              mainWindow.webContents.send('show-userinfo', {
-                id: e.id,
-              });
-            },
-          };
-        }),
-      );
-      contactsMenu.submenu = contacts;
-    }
-
-    if (shouldUpdate) {
-      createMenu();
-    }
-  });
+  // ipcMain.on('menu-update', async (event, args) => {
+  //   var { cookies, contacts = [], conversations = [] } = args;
+  //   var conversationsMenu = mainMenu.find(e => e.label === 'Conversations');
+  //   var contactsMenu = mainMenu.find(e => e.label === 'Contacts');
+  //   var shouldUpdate = false;
+  //
+  //   // if (!isOsx) {
+  //   //     return;
+  //   // }
+  //
+  //   if (
+  //     conversations.length &&
+  //     conversations.map(e => e.name).join() !== conversationsMenu.submenu.map(e => e.label).join()
+  //   ) {
+  //     shouldUpdate = true;
+  //
+  //     conversations = await Promise.all(
+  //       conversations.map(async (e, index) => {
+  //         let icon = await getIcon(cookies, e.id, e.avatar);
+  //         return {
+  //           label: e.name,
+  //           accelerator: !isOsx ? `Ctrl+${index}` : `Cmd+${index}`,
+  //           icon,
+  //           click() {
+  //             mainWindow.show();
+  //             mainWindow.webContents.send('message-chatto', {
+  //               id: e.id,
+  //             });
+  //           },
+  //         };
+  //       }),
+  //     );
+  //     conversationsMenu.submenu = conversations;
+  //   }
+  //   
+  //   if (contacts && contacts instanceof Array && contacts.length) {
+  //     shouldUpdate = true;
+  //
+  //     contacts = await Promise.all(
+  //       contacts.map(async e => {
+  //         let icon = await getIcon(cookies, e.id, e.avatar);
+  //         return {
+  //           label: e.name,
+  //           icon,
+  //           click() {
+  //             mainWindow.show();
+  //             mainWindow.webContents.send('show-userinfo', {
+  //               id: e.id,
+  //             });
+  //           },
+  //         };
+  //       }),
+  //     );
+  //     contactsMenu.submenu = contacts;
+  //   }
+  //
+  //   if (shouldUpdate) {
+  //     createMenu();
+  //   }
+  // });
 
   ipcMain.on('message-unread', (event, args) => {
     var counter = args.counter;
-
     if (settings.showOnTray) {
       updateTray(counter);
     }

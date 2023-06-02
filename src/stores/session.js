@@ -265,68 +265,77 @@ class Session {
       // Start detect timeout
       self.checkTimeout();
 
-      const response = await axios
-        .get(`${host}cgi-bin/mmwebwx-bin/synccheck`, {
-          cancelToken: new CancelToken(exe => {
-            // An executor function receives a cancel function as a parameter
-            this.cancelCheck = exe;
-          }),
-          params: {
-            r: +new Date(),
-            sid: auth.wxsid,
-            uin: auth.wxuin,
-            skey: auth.skey,
-            synckey: self.syncKey,
-          },
-        })
-        .catch(ex => {
-          // if (axios.isCancel(ex)) {
-          //   loop();
-          // } else {
-          sleep(30 * 1000);
-          console.log(ex, 'synccheck error');
-          return loop();
-          // setTimeout(() => loop(), 30 * 1000);
-          // }
-        });
+      const response = await axios.get(`${host}cgi-bin/mmwebwx-bin/synccheck`, {
+        cancelToken: new CancelToken(exe => {
+          // An executor function receives a cancel function as a parameter
+          this.cancelCheck = exe;
+        }),
+        params: {
+          r: +new Date(),
+          sid: auth.wxsid,
+          uin: auth.wxuin,
+          skey: auth.skey,
+          synckey: self.syncKey,
+        },
+      }).catch(() => loop());
+      
+      if (response && response.data) eval(response.data);
 
-      if (response && response.data.includes('notifyid')) {
-        return self.logout();
-      }
+      const retcode = response.data?.match(/retcode:"(\d+)"/)[1];
+      const selector = response.data?.match(/selector:"(\d+)"/)[1];
 
-      if (response && response.data) {
-        eval(response.data);
-      }
-      // const retcode = response.data.match(/retcode:"(\d+)"/)[1];
-      // const selector = response.data.match(/selector:"(\d+)"/)[1];
-
-      if (+window.synccheck.retcode == 1102) {
-        return self.logout();
-      }
-
-      if (+window.synccheck.retcode === 0) {
-        // 2, Has new message
-        // 6, New friend
-        // 4, Conversation refresh ?
-        // 7, Exit or enter
-        let selector = +window.synccheck.selector;
-
-        if (selector !== 0) {
-          await self.getNewMessage();
-          // .catch(() => {
-          //   self.getNewMessage();
-          // });
-        }
-
-        // Do next sync keep your wechat alive
+      // retcode
+      // SUCCESS("0", "成功"),
+      // TICKET_ERROR("-14", "ticket错误"),
+      // PARAM_ERROR("1", "传入参数错误"),
+      // NOT_LOGIN_WARN("1100", "未登录提示"),
+      // NOT_LOGIN_CHECK("1101", "未检测到登录"),
+      // COOKIE_INVALID_ERROR("1102", "cookie值无效"),
+      // LOGIN_ENV_ERROR("1203", "当前登录环境异常，为了安全起见请不要在web端进行登录"),
+      // TOO_OFEN("1205", "操作频繁");
+      //
+      // selector
+      // NORMAL("0", "正常"),
+      // NEW_MSG("2", "有新消息"),
+      // MOD_CONTACT("4", "有人修改了自己的昵称或你修改了别人的备注"),
+      // ADD_OR_DEL_CONTACT("6", "存在删除或者新增的好友信息"),
+      // ENTER_OR_LEAVE_CHAT("7", "进入或离开聊天界面");
+      
+      switch (retcode) {
+        case '0':
+          if (selector !== 0) await self.getNewMessage();
+          break;
+        case '1100':
+          console.log('未登录提示');
+          // self.logout();
+          break;
+        case '1101':
+          console.log('未检测到登录');
+          // self.logout();
+          break;
+        case '1102':
+          console.log('cookie值无效');
+          break;
+        case '1203':
+          console.log('当前登录环境异常，为了安全起见请不要在web端进行登录');
+          break;
+        case '1205':
+          console.log('操作频繁');
+          break;
+        default:
+          console.log('retcode: ', retcode);
+          break;
       }
       return loop();
     };
 
     // Load the rencets chats
     response.data.AddMsgList.map(async e => {
-      await chat.loadChats(e.StatusNotifyUserName);
-    });
+    //   await chat.loadChats(e.StatusNotifyUserName);
+      if (e.StatusNotifyUserName) {
+        console.log(e, 'e.StatusNotifyUserName');
+      }
+     });
 
     self.genSyncKey(response.data.SyncCheckKey.List);
     self.loading = false;

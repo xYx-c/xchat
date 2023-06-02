@@ -52,6 +52,13 @@ export default class Chats extends Component {
     }
   }
 
+  isMuted(userid) {
+    let list = this.props.messages.get(userid);
+    if (list) {
+      return list.isMuted;
+    }
+  }
+
   showContextMenu(user) {
     var menu = new Menu.buildFromTemplate([
       {
@@ -113,7 +120,7 @@ export default class Chats extends Component {
           {!searching &&
             chats.map((e, index) => {
               var message = this.getTheLastestMessage(e.UserName) || {};
-              var muted = helper.isMuted(e);
+              // var muted = helper.isMuted(e);
               var isTop = helper.isTop(e);
               return (
                 <div
@@ -128,8 +135,8 @@ export default class Chats extends Component {
                   <div className={classes.inner}>
                     <div
                       className={clazz(classes.dot, {
-                        [classes.green]: !muted && this.hasUnreadMessage(e.UserName),
-                        [classes.red]: muted && this.hasUnreadMessage(e.UserName),
+                        [classes.green]: !this.isMuted(e.UserName) && this.hasUnreadMessage(e.UserName),
+                        [classes.red]: this.isMuted(e.UserName) && this.hasUnreadMessage(e.UserName),
                       })}
                     >
                       <img

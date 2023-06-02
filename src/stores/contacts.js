@@ -60,13 +60,12 @@ class Contacts {
 
   @action async getUser(userid) {
     let user = self.memberList.find(e => e.UserName === userid);
-    if (user) {
-      return user;
-    } else {
-      await self.batch([userid]);
-      user = await self.getUser(userid);
-      return user;
+    if (!user) {
+      //   await self.batch([userid]);
+      console.log('getUser', userid, user);
+      //   return self.memberList.find(e => e.UserName === userid);
     }
+    return user;
   }
 
   @action async getContats() {
@@ -88,6 +87,7 @@ class Contacts {
     self.memberList = response.data.MemberList.filter(
       e => helper.isContact(e) && !helper.isOfficial(e) && !helper.isBrand(e),
     ).concat(me);
+
     // storage.set('memberList', self.memberList);
     // }
 
@@ -143,7 +143,6 @@ class Contacts {
   }
 
   // Batch get the contacts
-  // 批量获取联系人
   async batch(list) {
     let auth = storage.get('auth');
     const response = await axios.post(`/cgi-bin/mmwebwx-bin/webwxbatchgetcontact?type=ex&r=${+new Date()}`, {
@@ -178,17 +177,16 @@ class Contacts {
         }
       });
 
-      if (shouldUpdate) {
-        // Update contact in menu
-        ipcRenderer.send('menu-update', {
-          contacts: JSON.parse(JSON.stringify(self.memberList.filter(e => helper.isContact(e)))),
-          cookies: await helper.getCookie(),
-        });
-      }
+      // if (shouldUpdate) {
+      //   // Update contact in menu
+      //   ipcRenderer.send('menu-update', {
+      //     contacts: JSON.parse(JSON.stringify(self.memberList.filter(e => helper.isContact(e)))),
+      //     cookies: await helper.getCookie(),
+      //   });
+      // }
     } else {
       throw new Error(`Failed to get user: ${list}`);
     }
-
     return response.data.ContactList;
   }
 
@@ -224,10 +222,10 @@ class Contacts {
     self.memberList = self.memberList.filter(e => e.UserName !== id);
 
     // Update contact in menu
-    ipcRenderer.send('menu-update', {
-      contacts: self.memberList.filter(e => helper.isContact(e)) || [],
-      cookies: await helper.getCookie(),
-    });
+    // ipcRenderer.send('menu-update', {
+    //   contacts: self.memberList.filter(e => helper.isContact(e)) || [],
+    //   cookies: await helper.getCookie(),
+    // });
   }
 
   @action async updateUser(user) {

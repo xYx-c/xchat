@@ -183,7 +183,9 @@ function hasUnreadMessage(messages) {
 
   Array.from(messages.keys()).map(e => {
     var item = messages.get(e);
-    counter += item.data.length - item.unread;
+    if (!item.isMuted) {
+      counter += item.data.length - item.unread;
+    }
   });
 
   ipcRenderer.send('message-unread', {
@@ -191,17 +193,17 @@ function hasUnreadMessage(messages) {
   });
 }
 
-async function updateMenus({ conversations = [], contacts = [] }) {
-  ipcRenderer.send('menu-update', {
-    conversations: conversations.map(e => ({ id: e.UserName, name: e.RemarkName || e.NickName, avatar: e.HeadImgUrl })),
-    contacts: contacts.map(e => ({
-      id: e.UserName,
-      name: e.RemarkName || e.NickName,
-      avatar: e.HeadImgUrl,
-    })),
-    cookies: await helper.getCookie(),
-  });
-}
+// async function updateMenus({ conversations = [], contacts = [] }) {
+//   ipcRenderer.send('menu-update', {
+//     conversations: conversations.map(e => ({ id: e.UserName, name: e.RemarkName || e.NickName, avatar: e.HeadImgUrl })),
+//     contacts: contacts.map(e => ({
+//       id: e.UserName,
+//       name: e.RemarkName || e.NickName,
+//       avatar: e.HeadImgUrl,
+//     })),
+//     cookies: await helper.getCookie(),
+//   });
+// }
 
 class Chat {
   @observable sessions = [];
@@ -222,14 +224,14 @@ class Chat {
   }
 
   @action async loadChats(chatSet) {
-    var list = contacts.memberList;
-    var res = [];
-    var temps = [];
-    var sorted = [];
+    let list = contacts.memberList;
+    let res = [];
+    let temps = [];
+    let sorted = [];
     if (!chatSet) return;
 
     helper.unique(chatSet.split(',')).map(e => {
-      let user = list.find(user => user.UserName === e && !helper.isChatRoom(e));
+      let user = list.find(user => user.UserName === e);
       if (user) {
         res.push(user);
       } else {
@@ -241,7 +243,7 @@ class Chat {
     if (temps.length) {
       await contacts.batch(temps);
       temps.map(e => {
-        var user = list.find(user => user.UserName === e);
+        let user = list.find(user => user.UserName === e);
         // Remove all the invalid accounts, eg: Official account
         if (user) {
           res.push(user);
@@ -253,6 +255,7 @@ class Chat {
       self.messages.set(e.UserName, {
         data: self.messages.get(e.UserName)?.data || [],
         unread: 0,
+        isMuted: helper.isMuted(e) !== 0,
       });
 
       // Save the original index to support sticky feature
@@ -265,11 +268,14 @@ class Chat {
       }
     });
 
-    self.sessions.replace(sorted);
-    updateMenus({
-      conversations: self.sessions.slice(0, 10),
-      contacts: contacts.memberList.filter(e => helper.isContact(e)),
-    });
+    //self.sessions.replace(sorted);
+    self.sessions = sorted;
+    // updateMenus({
+    //   conversations: self.sessions.slice(0, 10),
+    //   contacts: contacts.memberList.filter(e => helper.isContact(e)),
+    // });
+    // 
+    console.log("loadChats end");
     return res;
   }
 
@@ -331,7 +337,8 @@ class Chat {
       }
     });
 
-    self.sessions.replace([...stickyed, ...normaled]);
+    // self.sessions.replace([...stickyed, ...normaled]);
+    self.sessions = [...stickyed, ...normaled];
     self.user = user;
     self.markedRead(user.UserName);
 
@@ -339,12 +346,12 @@ class Chat {
   }
 
   @action async addMessage(message, sync = false) {
-    var from = message.FromUserName;
-    var user = await contacts.getUser(from);
-    var list = self.messages.get(from);
-    var sessions = self.sessions;
-    var stickyed = [];
-    var normaled = [];
+    let from = message.FromUserName;
+    let user = await contacts.getUser(from);
+    let list = self.messages.get(from);
+    let sessions = self.sessions;
+    let stickyed = [];
+    let normaled = [];
 
     if (!user) {
       return console.error('Got an invalid message: %o', message);
@@ -361,12 +368,10 @@ class Chat {
       message.FromUserName = message.ToUserName;
       message.ToUserName = user.UserName;
     }
-
     // User is already in the chat set
     if (list) {
       // Swap the chatset order
       let index = self.sessions.findIndex(e => e.UserName === from);
-
       if (index !== -1) {
         sessions = [
           ...self.sessions.slice(index, index + 1),
@@ -377,11 +382,9 @@ class Chat {
         // When user has removed should add to chat set
         sessions = [user, ...self.sessions];
       }
-
       // Drop the duplicate message
       if (!list.data.find(e => e.NewMsgId === message.NewMsgId)) {
         let title = user.RemarkName || user.NickName;
-
         message = await resolveMessage(message);
 
         if (!helper.isMuted(user) && !sync && settings.showNotification) {
@@ -394,6 +397,7 @@ class Chat {
           notification.onclick = () => {
             ipcRenderer.send('show-window');
           };
+          console.log('notification', notification);
         }
         list.data.push(message);
       }
@@ -412,6 +416,8 @@ class Chat {
       list.unread = list.data.length;
     }
 
+    list.isMuted = helper.isMuted(user);
+
     sessions = sessions.map(e => {
       // Catch the contact update, eg: MsgType = 10000, chat room name has changed
       var user = contacts.memberList.find(user => user.UserName === e.UserName);
@@ -424,12 +430,13 @@ class Chat {
       }
     });
 
-    self.sessions.replace([...stickyed, ...normaled]);
+    // self.sessions.replace([...stickyed, ...normaled]);
+    self.sessions = [...stickyed, ...normaled];
 
     hasUnreadMessage(self.messages);
-    updateMenus({
-      conversations: self.sessions.slice(0, 10),
-    });
+    // updateMenus({
+    //   conversations: self.sessions.slice(0, 10),
+    // });
   }
 
   @action async sendTextMessage(auth, message, isForward) {
@@ -1031,26 +1038,25 @@ class Chat {
   }
 
   @action markedRead(userid) {
-    var list = self.messages.get(userid);
-
     // Update the unread message need the chat in chat list
-    if (!self.sessions.map(e => e.UserName).includes(userid)) {
-      return;
-    }
+    // if (!self.sessions.map(e => e.UserName).includes(userid)) {
+    //   return;
+    // }
+    if (!self.sessions.find(e => e.UserName === userid)) return;
+
+    var list = self.messages.get(userid);
 
     if (list) {
       list.unread = list.data.length;
     } else {
-      list = {
-        data: [],
-        unread: 0,
-      };
+      list = { data: [], unread: 0 };
     }
 
     self.messages.set(userid, list);
   }
 
   @action async sticky(user) {
+    console.log('sticky', user);
     var auth = await storage.get('auth');
     var sticky = +!helper.isTop(user);
     var response = await axios.post('/cgi-bin/mmwebwx-bin/webwxoplog', {
@@ -1077,7 +1083,8 @@ class Chat {
             sorted.push(e);
           }
         });
-      self.sessions.replace(sorted);
+      // self.sessions.replace(sorted);
+      self.sessions.sorted;
 
       updateMenus({
         conversations: sorted.slice(0, 10),
@@ -1089,8 +1096,9 @@ class Chat {
   }
 
   @action removeChat(user) {
-    var sessions = self.sessions.filter(e => e.UserName !== user.UserName);
-    self.sessions.replace(sessions);
+    let sessions = self.sessions.filter(e => e.UserName !== user.UserName);
+    // self.sessions.replace(sessions);
+    self.sessions = sessions;
 
     updateMenus({
       conversations: sessions.slice(0, 10),

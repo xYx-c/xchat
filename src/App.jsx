@@ -145,7 +145,6 @@ const App = () => {
   const stores = useStores();
   useEffect(() => {
     if (window.navigator.onLine) {
-      console.log('App.jsx mounted');
       stores.session.hasLogin();
       stores.settings.init();
       // stores.search.getHistory();

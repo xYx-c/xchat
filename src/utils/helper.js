@@ -84,25 +84,26 @@ const helper = {
     return { xml, value };
   },
 
-  unique: arr => {
-    var mappings = {};
-    var res = [];
-
-    arr.map(e => {
-      mappings[e] = true;
-    });
-
-    for (var key in mappings) {
-      if (mappings[key] === true) {
-        res.push(key);
-      }
-    }
-
-    return res;
-  },
   // unique: arr => {
-  //   return Array.from(new Set(arr));
+  //   var mappings = {};
+  //   var res = [];
+  //
+  //   arr.map(e => {
+  //     mappings[e] = true;
+  //   });
+  //
+  //   for (var key in mappings) {
+  //     if (mappings[key] === true) {
+  //       res.push(key);
+  //     }
+  //   }
+  //
+  //   return res;
   // },
+  
+  unique: arr => {
+    return Array.from(new Set(arr));
+  },
 
   getMessageContent: message => {
     var isChatRoom = helper.isChatRoom(message.FromUserName);
