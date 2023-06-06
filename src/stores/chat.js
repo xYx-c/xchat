@@ -206,7 +206,7 @@ function hasUnreadMessage(messages) {
 // }
 
 class Chat {
-  @observable sessions = [];
+  @observable sessions = storage.get('sessions') || [];
   @observable messages = new Map();
   @observable user = false;
   @observable showConversation = true;
@@ -269,13 +269,17 @@ class Chat {
     });
 
     //self.sessions.replace(sorted);
-    self.sessions = sorted;
+    if (self.sessions && self.sessions.lenght) {
+      self.sessions = storage.get('sessions');
+    } else {
+      self.sessions = sorted;
+      storage.set('sessions', self.sessions);
+    }
     // updateMenus({
     //   conversations: self.sessions.slice(0, 10),
     //   contacts: contacts.memberList.filter(e => helper.isContact(e)),
     // });
-    // 
-    console.log("loadChats end");
+    //
     return res;
   }
 
@@ -339,6 +343,7 @@ class Chat {
 
     // self.sessions.replace([...stickyed, ...normaled]);
     self.sessions = [...stickyed, ...normaled];
+    storage.set('sessions', self.sessions);
     self.user = user;
     self.markedRead(user.UserName);
 
@@ -354,7 +359,7 @@ class Chat {
     let normaled = [];
 
     if (!user) {
-      return console.error('Got an invalid message: %o', message);
+      return console.warn('Got an invalid message: %o', message);
     }
 
     // Add the messages of your sent on phone to the chat sets
@@ -387,17 +392,20 @@ class Chat {
         let title = user.RemarkName || user.NickName;
         message = await resolveMessage(message);
 
-        if (!helper.isMuted(user) && !sync && settings.showNotification) {
+        if (
+          !helper.isMuted(user) &&
+          !sync &&
+          settings.showNotification &&
+          Date.now() - message.CreateTime * 1000 < 5000
+        ) {
           let notification = new window.Notification(title, {
             icon: user.HeadImgUrl,
             body: helper.getMessageContent(message),
             vibrate: [200, 100, 200],
           });
-
           notification.onclick = () => {
             ipcRenderer.send('show-window');
           };
-          console.log('notification', notification);
         }
         list.data.push(message);
       }
@@ -414,6 +422,10 @@ class Chat {
     if (self.user.UserName === from) {
       // Message has readed
       list.unread = list.data.length;
+    }
+    if (message.CreateTime + 30 < Date.now() / 1000) {
+      // 历史消息
+      self.markedRead(from);
     }
 
     list.isMuted = helper.isMuted(user);
@@ -432,6 +444,7 @@ class Chat {
 
     // self.sessions.replace([...stickyed, ...normaled]);
     self.sessions = [...stickyed, ...normaled];
+    storage.set('sessions', self.sessions);
 
     hasUnreadMessage(self.messages);
     // updateMenus({
@@ -1086,9 +1099,9 @@ class Chat {
       // self.sessions.replace(sorted);
       self.sessions.sorted;
 
-      updateMenus({
-        conversations: sorted.slice(0, 10),
-      });
+      // updateMenus({
+      //   conversations: sorted.slice(0, 10),
+      // });
       return true;
     }
 
@@ -1099,10 +1112,11 @@ class Chat {
     let sessions = self.sessions.filter(e => e.UserName !== user.UserName);
     // self.sessions.replace(sessions);
     self.sessions = sessions;
+    storage.set('sessions', sessions);
 
-    updateMenus({
-      conversations: sessions.slice(0, 10),
-    });
+    // updateMenus({
+    //   conversations: sessions.slice(0, 10),
+    // });
   }
 
   @action empty(user) {

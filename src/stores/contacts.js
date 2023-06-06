@@ -12,7 +12,7 @@ import { normalize } from 'utils/emoji';
 class Contacts {
   @observable loading = false;
   @observable showGroup = true;
-  @observable memberList = [];
+  @observable memberList = storage.get('memberList') || [];
   @observable filtered = {
     query: '',
     result: [],
@@ -61,9 +61,8 @@ class Contacts {
   @action async getUser(userid) {
     let user = self.memberList.find(e => e.UserName === userid);
     if (!user) {
-      //   await self.batch([userid]);
-      console.log('getUser', userid, user);
-      //   return self.memberList.find(e => e.UserName === userid);
+      await self.batch([userid]);
+      user = self.memberList.find(e => e.UserName === userid);
     }
     return user;
   }
@@ -73,23 +72,23 @@ class Contacts {
 
     var auth = await storage.get('auth');
     var me = session.user.User;
-    // if (storage.get('memberList') instanceof Array && storage.get('memberList').length) {
-    //   self.memberList = storage.get('memberList');
-    // } else {
-    const response = await axios.get('/cgi-bin/mmwebwx-bin/webwxgetcontact', {
-      params: {
-        r: +new Date(),
-        seq: 0,
-        skey: auth.skey,
-      },
-    });
-    // Remove all official account and brand account
-    self.memberList = response.data.MemberList.filter(
-      e => helper.isContact(e) && !helper.isOfficial(e) && !helper.isBrand(e),
-    ).concat(me);
+    if (storage.get('memberList') instanceof Array && storage.get('memberList').length) {
+      self.memberList = storage.get('memberList');
+    } else {
+      const response = await axios.get('/cgi-bin/mmwebwx-bin/webwxgetcontact', {
+        params: {
+          r: +new Date(),
+          seq: 0,
+          skey: auth.skey,
+        },
+      });
+      // Remove all official account and brand account
+      self.memberList = response.data.MemberList.filter(
+        e => helper.isContact(e) && !helper.isOfficial(e) && !helper.isBrand(e),
+      ).concat(me);
 
-    // storage.set('memberList', self.memberList);
-    // }
+      storage.set('memberList', self.memberList);
+    }
 
     self.memberList.map(e => {
       e.MemberList = [];
@@ -220,6 +219,7 @@ class Contacts {
 
   @action async deleteUser(id) {
     self.memberList = self.memberList.filter(e => e.UserName !== id);
+    storage.set('memberList', self.memberList);
 
     // Update contact in menu
     // ipcRenderer.send('menu-update', {
@@ -249,6 +249,7 @@ class Contacts {
 
       list[index] = user;
       self.memberList.replace(list);
+      storage.set('memberList', self.memberList);
     }
   }
 }

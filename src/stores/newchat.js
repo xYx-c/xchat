@@ -16,6 +16,7 @@ class NewChat {
   }
 
   @action toggle(show = !self.show) {
+    console.log('toggle newchat');
     self.show = show;
   }
 

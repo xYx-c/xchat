@@ -45,11 +45,11 @@ const helper = {
   isFileHelper: user => user.UserName === 'filehelper',
 
   isTop: user => {
-    if (user.isTop !== void 0) {
-      return user.isTop;
+    if (user?.isTop !== void 0) {
+      return user?.isTop;
     }
 
-    return user.ContactFlag & CONTACTFLAG_TOPCONTACT;
+    return user?.ContactFlag & CONTACTFLAG_TOPCONTACT;
   },
 
   isBrand: user => {

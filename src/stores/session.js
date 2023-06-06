@@ -153,6 +153,7 @@ class Session {
     });
 
     self.user = response.data;
+    storage.set('user', response.data);
 
     self.user.ContactList.map(e => {
       e.HeadImgUrl = `${axios.defaults.baseURL}${e.HeadImgUrl.substr(1)}`;
@@ -180,6 +181,7 @@ class Session {
 
     // Refresh the sync keys
     self.user.SyncKey = response.data.SyncCheckKey;
+    storage.set('user', self.user);
     self.genSyncKey(response.data.SyncCheckKey.List);
 
     // Get the new friend, or chat room has change
@@ -247,8 +249,8 @@ class Session {
   }
 
   async keepalive() {
-    var auth = self.auth;
-    var response = await axios.post(
+    let auth = self.auth;
+    const response = await axios.post(
       `/cgi-bin/mmwebwx-bin/webwxsync?sid=${auth.wxsid}&skey=${auth.skey}&lang=en_US&pass_ticket=${auth.passTicket}`,
       {
         BaseRequest: {
@@ -265,77 +267,66 @@ class Session {
       // Start detect timeout
       self.checkTimeout();
 
-      const response = await axios.get(`${host}cgi-bin/mmwebwx-bin/synccheck`, {
-        cancelToken: new CancelToken(exe => {
-          // An executor function receives a cancel function as a parameter
-          this.cancelCheck = exe;
-        }),
-        params: {
-          r: +new Date(),
-          sid: auth.wxsid,
-          uin: auth.wxuin,
-          skey: auth.skey,
-          synckey: self.syncKey,
-        },
-      }).catch(() => loop());
-      
+      const response = await axios
+        .get(`${host}cgi-bin/mmwebwx-bin/synccheck`, {
+          cancelToken: new CancelToken(exe => {
+            // An executor function receives a cancel function as a parameter
+            this.cancelCheck = exe;
+          }),
+          params: {
+            r: +new Date(),
+            sid: auth.wxsid,
+            uin: auth.wxuin,
+            skey: auth.skey,
+            synckey: self.syncKey,
+          },
+        })
+        .catch(() => loop());
+
       if (response && response.data) eval(response.data);
+      if (response.status !== 200) {
+        console.log('keepalive error', response);
+        self.hasLogin();
+      }
 
-      const retcode = response.data?.match(/retcode:"(\d+)"/)[1];
-      const selector = response.data?.match(/selector:"(\d+)"/)[1];
+      // const retcode = response.data?.match(/retcode:"(\d+)"/)[1];
+      // const selector = response.data?.match(/selector:"(\d+)"/)[1];
 
-      // retcode
-      // SUCCESS("0", "成功"),
-      // TICKET_ERROR("-14", "ticket错误"),
-      // PARAM_ERROR("1", "传入参数错误"),
-      // NOT_LOGIN_WARN("1100", "未登录提示"),
-      // NOT_LOGIN_CHECK("1101", "未检测到登录"),
-      // COOKIE_INVALID_ERROR("1102", "cookie值无效"),
-      // LOGIN_ENV_ERROR("1203", "当前登录环境异常，为了安全起见请不要在web端进行登录"),
-      // TOO_OFEN("1205", "操作频繁");
-      //
-      // selector
-      // NORMAL("0", "正常"),
-      // NEW_MSG("2", "有新消息"),
-      // MOD_CONTACT("4", "有人修改了自己的昵称或你修改了别人的备注"),
-      // ADD_OR_DEL_CONTACT("6", "存在删除或者新增的好友信息"),
-      // ENTER_OR_LEAVE_CHAT("7", "进入或离开聊天界面");
-      
-      switch (retcode) {
-        case '0':
-          if (selector !== 0) await self.getNewMessage();
+      switch (+window.synccheck.retcode) {
+        case 0:
+          if (+window.synccheck.selector != 0) await self.getNewMessage();
           break;
-        case '1100':
+        case 1100:
           console.log('未登录提示');
           // self.logout();
           break;
-        case '1101':
+        case 1101:
           console.log('未检测到登录');
-          // self.logout();
+          self.logout();
           break;
-        case '1102':
+        case 1102:
           console.log('cookie值无效');
           break;
-        case '1203':
+        case 1203:
           console.log('当前登录环境异常，为了安全起见请不要在web端进行登录');
           break;
-        case '1205':
+        case 1205:
           console.log('操作频繁');
           break;
         default:
-          console.log('retcode: ', retcode);
+          console.log('response: ', response);
+          console.log('retcode: ', window.synccheck.retcode);
           break;
       }
       return loop();
     };
 
     // Load the rencets chats
-    response.data.AddMsgList.map(async e => {
-    //   await chat.loadChats(e.StatusNotifyUserName);
-      if (e.StatusNotifyUserName) {
-        console.log(e, 'e.StatusNotifyUserName');
-      }
-     });
+    // response.data.AddMsgList.map(async e => {
+      // if (e.StatusNotifyUserName) {
+      //   await chat.loadChats(e.StatusNotifyUserName);
+      // }
+    // });
 
     self.genSyncKey(response.data.SyncCheckKey.List);
     self.loading = false;
@@ -346,7 +337,14 @@ class Session {
     self.auth = storage.get('auth');
     if (self.auth) {
       axios.defaults.baseURL = self.auth.baseURL;
-      await self.initUser();
+      // await self.initUser();
+      if (!contacts.memberList || !contacts.memberList.length) {
+        await contacts.getContats();
+      }
+      self.user = storage.get('user');
+      if (!chat.sessions || !chat.sessions.length) {
+        await chat.loadChats(self.user.ChatSet);
+      }
       // self.keepalive().catch(() => self.logout());
       self.keepalive();
     }
@@ -368,6 +366,9 @@ class Session {
   async exit() {
     storage.remove('cookies');
     storage.remove('auth');
+    storage.remove('user');
+    storage.remove('contacts');
+    storage.remove('sessions');
     window.location.reload();
   }
 }

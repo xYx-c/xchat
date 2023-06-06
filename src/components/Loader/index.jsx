@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Transition from 'react-addons-css-transition-group';
-// import { Transition } from 'react-transition-group';
+import { CSSTransition } from 'react-transition-group';
 import clazz from 'classnames';
 
 import './style.global.scss';
@@ -21,7 +20,6 @@ export default class Button extends Component {
     if (!this.props.show) {
       return;
     }
-
     return (
       <div className={clazz('Loader', this.props.className, { 'Loader--fullscreen': this.props.fullscreen })}>
         <svg className={'Loader-circular'}>
@@ -32,11 +30,10 @@ export default class Button extends Component {
   }
 
   render() {
-    // return <Transition timeout={200}>{this.renderContent()}</Transition>;
     return (
-      <Transition transitionName="Loader" transitionEnterTimeout={200} transitionLeaveTimeout={200}>
-        {this.renderContent()}
-      </Transition>
+      <CSSTransition classNames="Loader" timeout={{ enter: 200, exit: 200 }}>
+        {() => this.renderContent()}
+      </CSSTransition>
     );
   }
 }
