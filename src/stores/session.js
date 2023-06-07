@@ -7,6 +7,7 @@ import storage from 'utils/storage';
 import { normalize } from 'utils/emoji';
 import chat from './chat';
 import contacts from './contacts';
+import IndexDB from '@/utils/indexdb';
 
 const CancelToken = axios.CancelToken;
 const headers = {
@@ -21,6 +22,7 @@ class Session {
   @observable code;
   @observable avatar;
   @observable user;
+  db;
 
   syncKey;
   // A callback for cancel the sync request
@@ -153,6 +155,7 @@ class Session {
     });
 
     self.user = response.data;
+    self.db = new IndexDB(self.user.User.Uin);
     storage.set('user', response.data);
 
     self.user.ContactList.map(e => {
@@ -289,12 +292,12 @@ class Session {
         self.hasLogin();
       }
 
-      // const retcode = response.data?.match(/retcode:"(\d+)"/)[1];
-      // const selector = response.data?.match(/selector:"(\d+)"/)[1];
+      const retcode = response.data?.match(/retcode:"(\d+)"/)[1];
+      const selector = response.data?.match(/selector:"(\d+)"/)[1];
 
-      switch (+window.synccheck.retcode) {
+      switch (+retcode) {
         case 0:
-          if (+window.synccheck.selector != 0) await self.getNewMessage();
+          if (+selector != 0) await self.getNewMessage();
           break;
         case 1100:
           console.log('未登录提示');
@@ -315,7 +318,8 @@ class Session {
           break;
         default:
           console.log('response: ', response);
-          console.log('retcode: ', window.synccheck.retcode);
+          console.log('retcode: ', retcode);
+          self.hasLogin();
           break;
       }
       return loop();
@@ -342,9 +346,10 @@ class Session {
         await contacts.getContats();
       }
       self.user = storage.get('user');
-      if (!chat.sessions || !chat.sessions.length) {
+      console.log(self.user)
+      // if (!chat.sessions || !chat.sessions.length) {
         await chat.loadChats(self.user.ChatSet);
-      }
+      // }
       // self.keepalive().catch(() => self.logout());
       self.keepalive();
     }

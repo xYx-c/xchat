@@ -28,8 +28,8 @@ export default class Snackbar extends Component {
 
   render() {
     return (
-      <TransitionPortal transitionEnterTimeout={0} transitionLeaveTimeout={150} transitionName="Snackbar">
-        {this.renderContent()}
+      <TransitionPortal timeout={{ enter: 0, exit: 150 }} classNames="Snackbar">
+        {() => this.renderContent()}
       </TransitionPortal>
     );
   }

@@ -193,20 +193,8 @@ function hasUnreadMessage(messages) {
   });
 }
 
-// async function updateMenus({ conversations = [], contacts = [] }) {
-//   ipcRenderer.send('menu-update', {
-//     conversations: conversations.map(e => ({ id: e.UserName, name: e.RemarkName || e.NickName, avatar: e.HeadImgUrl })),
-//     contacts: contacts.map(e => ({
-//       id: e.UserName,
-//       name: e.RemarkName || e.NickName,
-//       avatar: e.HeadImgUrl,
-//     })),
-//     cookies: await helper.getCookie(),
-//   });
-// }
-
 class Chat {
-  @observable sessions = storage.get('sessions') || [];
+  @observable sessions = [];
   @observable messages = new Map();
   @observable user = false;
   @observable showConversation = true;
@@ -214,10 +202,6 @@ class Chat {
   constructor() {
     makeAutoObservable(this);
   }
-
-  // @action saveMessages() {
-  //   storage.set('messages', self.messages);
-  // }
 
   @action toggleConversation(show = !self.showConversation) {
     self.showConversation = show;
@@ -268,18 +252,7 @@ class Chat {
       }
     });
 
-    //self.sessions.replace(sorted);
-    if (self.sessions && self.sessions.lenght) {
-      self.sessions = storage.get('sessions');
-    } else {
-      self.sessions = sorted;
-      storage.set('sessions', self.sessions);
-    }
-    // updateMenus({
-    //   conversations: self.sessions.slice(0, 10),
-    //   contacts: contacts.memberList.filter(e => helper.isContact(e)),
-    // });
-    //
+    self.sessions = sorted;
     return res;
   }
 
@@ -343,7 +316,6 @@ class Chat {
 
     // self.sessions.replace([...stickyed, ...normaled]);
     self.sessions = [...stickyed, ...normaled];
-    storage.set('sessions', self.sessions);
     self.user = user;
     self.markedRead(user.UserName);
 
@@ -351,6 +323,8 @@ class Chat {
   }
 
   @action async addMessage(message, sync = false) {
+    console.log(session.db, 'session.db')
+    console.log(message);
     let from = message.FromUserName;
     let user = await contacts.getUser(from);
     let list = self.messages.get(from);
@@ -444,12 +418,7 @@ class Chat {
 
     // self.sessions.replace([...stickyed, ...normaled]);
     self.sessions = [...stickyed, ...normaled];
-    storage.set('sessions', self.sessions);
-
     hasUnreadMessage(self.messages);
-    // updateMenus({
-    //   conversations: self.sessions.slice(0, 10),
-    // });
   }
 
   @action async sendTextMessage(auth, message, isForward) {

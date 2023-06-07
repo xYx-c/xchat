@@ -175,12 +175,9 @@ export default class MessageInput extends Component {
           />
 
           <i
-            className="icon-ion-ios-heart"
+            className="icon-ion-android-happy"
             id="showEmoji"
             onClick={e => canisend && this.toggleEmoji(true)}
-            style={{
-              color: 'red',
-            }}
           />
 
           <input

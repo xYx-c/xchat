@@ -44,7 +44,7 @@ export default class Suggestion extends Component {
 
   render() {
     return (
-      <TransitionPortal transitionEnterTimeout={0} transitionLeaveTimeout={150} transitionName="Suggestion">
+      <TransitionPortal timeout={{enter: 0, exit: 150}} classNames="Suggestion">
         {this.renderContent()}
       </TransitionPortal>
     );

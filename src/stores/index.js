@@ -1,4 +1,3 @@
-
 import session from './session';
 import chat from './chat';
 import addfriend from './addfriend';
@@ -15,20 +14,20 @@ import snackbar from './snackbar';
 import confirmImagePaste from './confirmImagePaste';
 
 const stores = {
-    session,
-    chat,
-    addfriend,
-    addmember,
-    newchat,
-    userinfo,
-    contacts,
-    search,
-    batchsend,
-    settings,
-    members,
-    forward,
-    snackbar,
-    confirmImagePaste,
+  session,
+  chat,
+  addfriend,
+  addmember,
+  newchat,
+  userinfo,
+  contacts,
+  search,
+  batchsend,
+  settings,
+  members,
+  forward,
+  snackbar,
+  confirmImagePaste,
 };
 
 export default stores;

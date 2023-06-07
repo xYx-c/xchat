@@ -29,7 +29,7 @@ export default class Footer extends Component {
 
           <Link className="link" tabIndex="-1" to="/contacts">
             <span className={clazz({ [classes.active]: pathname === '/contacts' })}>
-              <i className="icon-ion-ios-book-outline" />
+              <i className="icon-ion-ios-people" />
             </span>
           </Link>
 

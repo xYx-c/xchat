@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Transition from 'react-addons-css-transition-group';
+import { CSSTransition } from 'react-transition-group';
 import clazz from 'classnames';
 
 import './style.scss';
@@ -10,11 +10,11 @@ import { on, off } from 'utils/event';
 class ModalBody extends Component {
   render() {
     return (
-      <Transition transitionName="fade" transitionEnterTimeout={1000} transitionLeaveTimeout={1000}>
+      <CSSTransition transitionName="fade" transitionEnterTimeout={1000} transitionLeaveTimeout={1000}>
         <div className={clazz('Modal-body', this.props.className)} style={this.props.style}>
           {this.props.children}
         </div>
-      </Transition>
+      </CSSTransition>
     );
   }
 }
@@ -85,22 +85,12 @@ class Modal extends Component {
 
     return (
       <div className="Modal" ref="node">
-        <Transition
-          transitionName={this.props.transition4overlay}
-          transitionEnterTimeout={200}
-          transitionLeaveTimeout={200}
-          ref="overlay"
-        >
-          {this.renderOverlay()}
-        </Transition>
+        <CSSTransition classNames={this.props.transition4overlay} timeout={{ enter: 200, exit: 140 }} ref="overlay">
+          {() => this.renderOverlay()}
+        </CSSTransition>
 
-        <TransitionPortal
-          transitionName={this.props.transition4body}
-          transitionEnterTimeout={200}
-          transitionLeaveTimeout={140}
-          ref="content"
-        >
-          {this.renderBody()}
+        <TransitionPortal classNames={this.props.transition4body} timeout={{ enter: 200, exit: 140 }} ref="content">
+          {() => this.renderBody()}
         </TransitionPortal>
       </div>
     );
