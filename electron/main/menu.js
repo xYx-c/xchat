@@ -289,13 +289,6 @@ export const tMenu = mainWindow => [
     type: 'separator',
   },
   {
-    label: 'Check for updates',
-    accelerator: !isOsx ? 'Ctrl+U' : 'Cmd+U',
-    // click() {
-    //     checkForUpdates();
-    // }
-  },
-  {
     label: 'Quit weweChat',
     accelerator: !isOsx ? 'Alt+Q' : 'Command+Q',
     selector: 'terminate:',

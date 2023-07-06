@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron';
 import { session as defaultSession } from '@electron/remote';
 import axios from 'axios';
-// import MD5 from 'browser-md5-file';
+import MD5 from 'browser-md5-file';
 
 import session from '../stores/session';
 
@@ -159,7 +159,7 @@ const helper = {
         .get({ url: axios.defaults.baseURL })
         .then(cookies => cookies.map(item => `${item.name}=${item.value}`).join(';'));
     }
-    return await cookies.get(name).then(cookies => {
+    return await cookies.get({name}).then(cookies => {
       if (cookies.length) {
         return cookies[0].value;
       } else {
@@ -280,12 +280,12 @@ const helper = {
   isSuspend: () => {
     return ipcRenderer.sendSync('is-suspend');
   },
-  // md5: (file) => {
-  //     const md = new MD5();
-  //     return new Promise((resolve, reject) => {
-  //         md.md5(file, (err, md5) => { resolve(err ? false : md5); }, progress => {});
-  //     });
-  // }
+  md5: (file) => {
+      const md = new MD5();
+      return new Promise((resolve, reject) => {
+          md.md5(file, (err, md5) => { resolve(err ? false : md5); }, progress => {});
+      });
+  }
   // md5: (file) => {
   //     return new Promise((resolve, reject) => {
   //         MD5(file, (err, md5) => {

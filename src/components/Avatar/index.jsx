@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import './style.global.scss';
+import helper from '@/utils/helper';
 
 export default class Avatar extends Component {
     static propTypes = {
@@ -11,7 +12,7 @@ export default class Avatar extends Component {
     };
 
     static defaultProps = {
-        fallback: 'assets/images/user-fallback.png',
+        fallback: helper.getImageUrl('../assets/images/user-fallback.png'),
     };
 
     handleError(e) {

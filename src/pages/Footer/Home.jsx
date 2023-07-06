@@ -9,7 +9,7 @@ import MessageInput from 'components/MessageInput';
   showMessage: stores.snackbar.showMessage,
   me: stores.session.user,
   confirmSendImage: async image => {
-    if (!stores.settings.confirmImagePaste) {
+    if (stores.settings.confirmImagePaste) {
       return true;
     }
 

@@ -67,9 +67,7 @@ export default class Chats extends Component {
           this.props.chatTo(user);
         },
       },
-      {
-        type: 'separator',
-      },
+      { type: 'separator' },
       {
         label: helper.isTop(user) ? 'Unsticky' : 'Sticky on Top',
         click: () => {

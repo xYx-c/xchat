@@ -9,6 +9,7 @@ import settings from './settings';
 import session from './session';
 import members from './members';
 import snackbar from './snackbar';
+import fs from 'fs';
 
 async function resolveMessage(message) {
   var auth = await storage.get('auth');
@@ -251,7 +252,6 @@ class Chat {
         sorted.push(e);
       }
     });
-
     self.sessions = sorted;
     return res;
   }
@@ -323,8 +323,6 @@ class Chat {
   }
 
   @action async addMessage(message, sync = false) {
-    console.log(session.db, 'session.db')
-    console.log(message);
     let from = message.FromUserName;
     let user = await contacts.getUser(from);
     let list = self.messages.get(from);
@@ -507,6 +505,7 @@ class Chat {
   }
 
   @action async sendImageMessage(auth, message, isForward) {
+    console.log(message, 'message');
     var response = await axios.post('/cgi-bin/mmwebwx-bin/webwxsendmsgimg?fun=async&f=json', {
       BaseRequest: {
         Sid: auth.wxsid,
@@ -722,6 +721,7 @@ class Chat {
   }
 
   @action async process(file, user = self.user) {
+    console.log(file, 'file');
     var showMessage = snackbar.showMessage;
 
     if (!file || file.size === 0) {
@@ -734,8 +734,8 @@ class Chat {
       return false;
     }
 
-    var { mediaId, signature, type, uploaderid } = await self.upload(file, user);
-    var res = await self.sendMessage(
+    let { mediaId, signature, type, uploaderid } = await self.upload(file, user);
+    const res = await self.sendMessage(
       user,
       {
         type,
@@ -750,8 +750,8 @@ class Chat {
       false,
       (to, messages, message) => {
         // Sent success
-        var list = messages.get(to);
-        var item = list.data.find(e => e.uploaderid === uploaderid);
+        let list = messages.get(to);
+        let item = list.data.find(e => e.uploaderid === uploaderid);
 
         switch (type) {
           case 3:
@@ -803,27 +803,26 @@ class Chat {
     if (res === false) {
       showMessage(`Failed to send ${file.name}.`);
     }
-
     return res;
   }
 
   @action async upload(file, user = self.user) {
-    console.error('upload file start');
-    var id = +new Date() * 1000 + Math.random().toString().substr(2, 4);
-    var md5 = await helper.md5(file);
-    var auth = await storage.get('auth');
-    var ticket = await helper.getCookie('webwx_data_ticket');
-    var server =
+    console.log('upload file:', file);
+    let id = +new Date() * 1000 + Math.random().toString().substr(2, 4);
+    let md5 = await helper.md5(file);
+    let auth = await storage.get('auth');
+    let ticket = await helper.getCookie('webwx_data_ticket');
+    let server =
       axios.defaults.baseURL.replace(/https:\/\//, 'https://file.') + 'cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json';
-    var mediaType = helper.getMediaType(file.name.split('.').slice(-1).pop());
-    var type = {
+    let mediaType = helper.getMediaType(file.name.split('.').slice(-1).pop());
+    let type = {
       pic: 3,
       video: 43,
       doc: 49 + 6,
     }[mediaType];
-    var chunks = Math.ceil(file.size / 524288);
-    var payment = {};
-    var process = async index => {
+    let chunks = Math.ceil(file.size / 524288);
+    let payment = {};
+    let process = async index => {
       let formdata = new window.FormData();
       let start = index * 524288;
       let end = start + 524288;
@@ -871,13 +870,10 @@ class Chat {
       var response = await axios.post(server, formdata);
       return response;
     };
-
     // Increase the counter
     self.upload.counter = self.upload.counter ? self.upload.counter + 1 : 0;
-
     type = file.name.toLowerCase().endsWith('.gif') ? 47 : type;
     var uploaderid = self.addUploadPreview(file, type, user);
-
     if (file.size > 1048576 * 10) {
       let response = await axios.post('/cgi-bin/mmwebwx-bin/webwxcheckupload', {
         BaseRequest: {
@@ -899,15 +895,11 @@ class Chat {
         payment.MediaId = data.MediaId;
       }
     }
-
-    var response;
-
+    let response;
     for (let i = 0; !payment.MediaId && i < chunks; ++i) {
       response = await process(i);
     }
-
     if (!response || response.data.BaseResponse.Ret === 0) {
-      console.error('upload file end');
       return {
         type,
         mediaId: payment.MediaId || response.data.MediaId,
@@ -915,11 +907,13 @@ class Chat {
         uploaderid,
       };
     }
-
     return false;
   }
 
   @action addUploadPreview(file, type, user = self.user) {
+    // let base64 = fs.readFileSync(file.path).toString('base64');
+    // file.src = 'data:image/png;base64,' + base64;
+    // file.src = 'file://' + file.path;
     var uploaderid = Math.random().toString();
     var to = user.UserName;
     var list = self.messages.get(to) || {
@@ -934,13 +928,12 @@ class Chat {
       uploading: true,
       uploaderid,
     };
-
     switch (type) {
       case 3:
         Object.assign(item, {
           image: {
             // Use the local path
-            src: file.path || file.name,
+            src: `file://${file.path || file.name}`,
           },
         });
         break;
@@ -979,9 +972,7 @@ class Chat {
       default:
         return 'Unknow Type';
     }
-
     list.data.push(item);
-
     self.markedRead(to);
     self.messages.set(to, list);
 

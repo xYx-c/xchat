@@ -1,5 +1,4 @@
 import { observable, action, makeAutoObservable } from 'mobx';
-import { ipcRenderer } from 'electron';
 import axios from 'axios';
 import { pinyin } from 'pinyin-pro';
 
@@ -86,18 +85,17 @@ class Contacts {
       self.memberList = response.data.MemberList.filter(
         e => helper.isContact(e) && !helper.isOfficial(e) && !helper.isBrand(e),
       ).concat(me);
-
+      
+      self.memberList.map(e => {
+        e.MemberList = [];
+        return self.resolveUser(auth, e);
+      });
       storage.set('memberList', self.memberList);
     }
 
-    self.memberList.map(e => {
-      e.MemberList = [];
-      return self.resolveUser(auth, e);
-    });
-
     self.loading = false;
     self.filtered.result = self.group(self.memberList);
-    return self.memberList;
+    return (window.list = self.memberList);
   }
 
   resolveUser(auth, user) {
@@ -130,7 +128,6 @@ class Contacts {
     user.NickName = normalize(user.NickName);
     user.RemarkName = normalize(user.RemarkName);
     user.Signature = normalize(user.Signature);
-
     user.HeadImgUrl = `${axios.defaults.baseURL}${user.HeadImgUrl.substr(1)}`;
     user.MemberList.map(e => {
       e.NickName = normalize(e.NickName);
@@ -158,7 +155,7 @@ class Contacts {
     });
 
     if (response.data.BaseResponse.Ret === 0) {
-      var shouldUpdate = false;
+      // var shouldUpdate = false;
 
       response.data.ContactList.map(e => {
         var index = self.memberList.findIndex(user => user.UserName === e.UserName);
@@ -166,7 +163,7 @@ class Contacts {
 
         if (!user) return;
 
-        shouldUpdate = true;
+        // shouldUpdate = true;
 
         if (index !== -1) {
           self.memberList[index] = user;
@@ -184,7 +181,8 @@ class Contacts {
       //   });
       // }
     } else {
-      throw new Error(`Failed to get user: ${list}`);
+      // throw new Error(`Failed to get user: ${list}`);
+      console.log(`Failed to get user: ${list}`);
     }
     return response.data.ContactList;
   }

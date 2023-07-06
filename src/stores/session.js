@@ -7,7 +7,6 @@ import storage from 'utils/storage';
 import { normalize } from 'utils/emoji';
 import chat from './chat';
 import contacts from './contacts';
-import IndexDB from '@/utils/indexdb';
 
 const CancelToken = axios.CancelToken;
 const headers = {
@@ -22,7 +21,6 @@ class Session {
   @observable code;
   @observable avatar;
   @observable user;
-  db;
 
   syncKey;
   // A callback for cancel the sync request
@@ -155,7 +153,6 @@ class Session {
     });
 
     self.user = response.data;
-    self.db = new IndexDB(self.user.User.Uin);
     storage.set('user', response.data);
 
     self.user.ContactList.map(e => {
@@ -286,18 +283,20 @@ class Session {
         })
         .catch(() => loop());
 
-      if (response && response.data) eval(response.data);
-      if (response.status !== 200) {
-        console.log('keepalive error', response);
-        self.hasLogin();
+      if (response && response.data) {
+        try {
+          eval(response.data);
+        } catch (e) {
+          return self.hasLogin();
+        }
+      } else {
+        return self.hasLogin();
       }
-
-      const retcode = response.data?.match(/retcode:"(\d+)"/)[1];
-      const selector = response.data?.match(/selector:"(\d+)"/)[1];
-
-      switch (+retcode) {
+      // const retcode = response.data?.match(/retcode:"(\d+)"/)[1];
+      // const selector = response.data?.match(/selector:"(\d+)"/)[1];
+      switch (+window.synccheck.retcode) {
         case 0:
-          if (+selector != 0) await self.getNewMessage();
+          if (+window.synccheck.selector != 0) await self.getNewMessage();
           break;
         case 1100:
           console.log('未登录提示');
@@ -305,11 +304,10 @@ class Session {
           break;
         case 1101:
           console.log('未检测到登录');
-          self.logout();
-          break;
+          return self.logout();
         case 1102:
           console.log('cookie值无效');
-          break;
+          return self.logout();
         case 1203:
           console.log('当前登录环境异常，为了安全起见请不要在web端进行登录');
           break;
@@ -327,9 +325,9 @@ class Session {
 
     // Load the rencets chats
     // response.data.AddMsgList.map(async e => {
-      // if (e.StatusNotifyUserName) {
-      //   await chat.loadChats(e.StatusNotifyUserName);
-      // }
+    // if (e.StatusNotifyUserName) {
+    //   await chat.loadChats(e.StatusNotifyUserName);
+    // }
     // });
 
     self.genSyncKey(response.data.SyncCheckKey.List);
@@ -346,9 +344,8 @@ class Session {
         await contacts.getContats();
       }
       self.user = storage.get('user');
-      console.log(self.user)
       // if (!chat.sessions || !chat.sessions.length) {
-        await chat.loadChats(self.user.ChatSet);
+      await chat.loadChats(self.user.ChatSet);
       // }
       // self.keepalive().catch(() => self.logout());
       self.keepalive();

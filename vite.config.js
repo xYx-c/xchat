@@ -96,17 +96,17 @@ export default defineConfig(({ command }) => {
         const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
         return {
           port: +url.port,
-          proxy: {
-            '/api': {
-              target: 'https://login.wx.qq.com/',
-              changeOrigin: true,
-              rewrite: path => path.replace(/^\/api/, ''),
-            },
-          },
+          // proxy: {
+          //   '/api': {
+          //     target: 'https://login.wx.qq.com/',
+          //     changeOrigin: true,
+          //     rewrite: path => path.replace(/^\/api/, ''),
+          //   },
+          // },
           open: false,
-          hmr: {
-            overlay: false,
-          },
+          // hmr: {
+          //   overlay: false,
+          // },
         };
       })(),
     clearScreen: false,

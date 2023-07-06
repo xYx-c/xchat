@@ -9,6 +9,7 @@ import {
   shell,
   nativeImage,
   session,
+  protocol,
 } from 'electron';
 import fs from 'fs';
 import tmp from 'tmp';
@@ -34,7 +35,6 @@ const store = new storage();
 process.env.DIST_ELECTRON = join(__dirname, '../');
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist');
 process.env.PUBLIC = process.env.VITE_DEV_SERVER_URL ? join(process.env.DIST_ELECTRON, '../public') : process.env.DIST;
-
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -76,10 +76,12 @@ const icon = `${__dirname}/../../src/assets/images/dock.png`;
 let mainMenu = null;
 let trayMenu = null;
 
+protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true, secure: true } }]);
+
 const createMainWindow = () => {
   mainWindow = new BrowserWindow({
     minWidth: 745,
-    minHeight: 450,
+    minHeight: 350,
     transparent: true,
     titleBarStyle: 'hiddenInset',
     backgroundColor: 'none',
@@ -227,16 +229,14 @@ const createMainWindow = () => {
 
     if (!image.isEmpty()) {
       let filename = tmp.tmpNameSync() + '.png';
-
       args = {
         hasImage: true,
         filename,
         raw: image.toPNG(),
       };
-
+      console.log(image, 'image');
       fs.writeFileSync(filename, image.toPNG());
     }
-
     event.returnValue = args;
   });
 
@@ -252,11 +252,11 @@ const createMainWindow = () => {
   });
 
   ipcMain.on('open-file', async (event, filename) => {
-    shell.openItem(filename);
+    shell.openPath(filename);
   });
 
   ipcMain.on('open-folder', async (event, dir) => {
-    shell.openItem(dir);
+    shell.openPath(dir);
   });
 
   ipcMain.on('open-map', (event, args) => {
@@ -264,11 +264,25 @@ const createMainWindow = () => {
     shell.openExternal(args.map);
   });
 
-  ipcMain.on('open-image', async (event, args) => {
-    var filename = `${imagesCacheDir}/img_${args.dataset.id}`;
+  protocol.handle('app', req => {
+    const url = req.url;
+    console.log(req, url);
+  });
 
-    fs.writeFileSync(filename, args.base64.replace(/^data:image\/png;base64,/, ''), 'base64');
-    shell.openItem(filename);
+  ipcMain.on('open-image', async (event, params) => {
+    console.log('open-image');
+    let args = JSON.parse(params);
+    if (args.src) {
+      shell.openPath(args.src.replace('file://', ''));
+    } else {
+      if (!args.base64) return;
+      if (args.dataset && args.dataset.id) {
+        let filename = `${imagesCacheDir}/img_${args.dataset.id}`;
+        fs.writeFile(filename, args.base64.replace(/^data:image\/png;base64,/, ''), 'base64', () => {
+          shell.openPath(filename);
+        });
+      }
+    }
   });
 
   ipcMain.on('is-suspend', (event, args) => {
@@ -383,7 +397,6 @@ app.on('before-quit', () => {
 
 app.whenReady().then(() => {
   createMainWindow();
-
   app.on('activate', () => {
     const allWindows = BrowserWindow.getAllWindows();
     if (allWindows.length) {

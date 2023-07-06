@@ -101,7 +101,6 @@ export default class ChatContent extends Component {
       case 3:
         // Image
         let image = message.image;
-
         if (uploading) {
           return `
                         <div>
@@ -225,14 +224,14 @@ export default class ChatContent extends Component {
         // File message
         let file = message.file;
         let download = message.download;
+        
+        let src = helper.getImageUrl(`../assets/images/filetypes/${helper.getFiletypeIcon(file.extension)}`);
 
         /* eslint-disable */
         return `
                     <div class="${classes.file}" data-id="${message.MsgId}">
                         
-                        <img src="assets/images/filetypes/${helper.getFiletypeIcon(
-          file.extension,
-        )}" class="disabledDrag" />
+                        <img src="${src}" class="disabledDrag" />
 
                         <div>
                             <p>${file.name}</p>
@@ -343,19 +342,16 @@ export default class ChatContent extends Component {
 
   async handleClick(e) {
     var target = e.target;
-
     // Open the image
     if (target.tagName === 'IMG' && target.classList.contains('open-image')) {
       // Get image from cache and convert to base64
-      let response = await axios.get(target.src, { responseType: 'arraybuffer' });
-      // eslint-disable-next-line
-      let base64 = new window.Buffer(response.data, 'binary').toString('base64');
-
-      ipcRenderer.send('open-image', {
-        dataset: target.dataset,
-        base64,
-      });
-
+      if (target.src.startsWith('file://')) {
+        ipcRenderer.send('open-image', JSON.stringify({ dataset: target.dataset, src: target.src }));
+      } else {
+        let response = await axios.get(target.src, { responseType: 'arraybuffer' });
+        let base64 = Buffer.from(response.data).toString('base64');
+        ipcRenderer.sendSync('open-image', JSON.stringify({ dataset: target.dataset, base64 }));
+      }
       return;
     }
 
@@ -406,10 +402,9 @@ export default class ChatContent extends Component {
     if (target.tagName === 'I' && target.classList.contains('is-download')) {
       let message = this.props.getMessage(e.target.parentElement.dataset.id);
       let response = await axios.get(message.file.download, { responseType: 'arraybuffer' });
-      // eslint-disable-next-line
-      let base64 = new window.Buffer(response.data, 'binary').toString('base64');
+      let base64 = Buffer.from(response.data).toString('base64');
       let filename = ipcRenderer.sendSync('file-download', {
-        filename: `${this.props.downloads}/${message.MsgId}_${message.file.name}`,
+        filename: `${this.props.downloads}/${message.file.name}`,
         raw: base64,
       });
 

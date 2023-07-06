@@ -1,4 +1,4 @@
-import React, { Component, createRef, useState, useEffect } from 'react';
+import React, { Component, useState, useEffect, useRef } from 'react';
 import { observer, inject } from 'mobx-react';
 import { ipcRenderer } from 'electron';
 import { Menu, getCurrentWindow } from '@electron/remote';
@@ -32,17 +32,14 @@ const Layout = () => {
   const close = () => stores.snackbar.toggle(false);
   const canidrag = () => !!stores.chat.user && !stores.batchsend.show;
 
-  const viewport = createRef(null);
-  const footer = createRef(null);
-  const holder = createRef(null);
+  const viewport = useRef();
+  const footer = useRef();
+  const holder = useRef();
   
-
   const location = useLocation();
 
   const [offline, setOffline] = useState(false);
-
-  const getImageUrl = path => new URL(path, import.meta.url).href;
-
+  
   let templates = [
     { label: 'Undo', role: 'undo' },
     { label: 'Redo', role: 'redo' },
@@ -73,7 +70,7 @@ const Layout = () => {
 
     window.addEventListener('online', () => {
       // Reconnect to wechat
-      props.reconnect();
+      reconnect();
       setOffline(false);
     });
 
@@ -83,8 +80,8 @@ const Layout = () => {
 
     window.ondragover = e => {
       if (canidrag()) {
-        holder.classList.add(classes.show);
-        viewport.classList.add(classes.blur);
+        holder.current.classList.add(classes.show);
+        viewport.current.classList.add(classes.blur);
       }
       // If not st as 'copy', electron will open the drop file
       e.dataTransfer.dropEffect = 'copy';
@@ -93,8 +90,8 @@ const Layout = () => {
 
     window.ondragleave = () => {
       if (!canidrag()) return false;
-      holder.classList.remove(classes.show);
-      viewport.classList.remove(classes.blur);
+      holder.current.classList.remove(classes.show);
+      viewport.current.classList.remove(classes.blur);
     };
 
     window.ondragend = e => false;
@@ -105,11 +102,11 @@ const Layout = () => {
       e.stopPropagation();
 
       if (files.length && canidrag()) {
-        Array.from(files).map(e => props.process(e));
+        Array.from(files).map(e => process(e));
       }
 
-      holder.classList.remove(classes.show);
-      viewport.classList.remove(classes.blur);
+      holder.current.classList.remove(classes.show);
+      viewport.current.classList.remove(classes.blur);
       return false;
     };
   };
@@ -146,12 +143,12 @@ const Layout = () => {
       <div className={classes.dragDropHolder} ref={holder}>
         <div className={classes.inner}>
           <div>
-            <img src={getImageUrl('../assets/images/filetypes/image.png')} />
-            <img src={getImageUrl('../assets/images/filetypes/word.png')} />
-            <img src={getImageUrl('../assets/images/filetypes/pdf.png')} />
-            <img src={getImageUrl('../assets/images/filetypes/archive.png')} />
-            <img src={getImageUrl('../assets/images/filetypes/video.png')} />
-            <img src={getImageUrl('../assets/images/filetypes/audio.png')} />
+            <img src={helper.getImageUrl('../assets/images/filetypes/image.png')} />
+            <img src={helper.getImageUrl('../assets/images/filetypes/word.png')} />
+            <img src={helper.getImageUrl('../assets/images/filetypes/pdf.png')} />
+            <img src={helper.getImageUrl('../assets/images/filetypes/archive.png')} />
+            <img src={helper.getImageUrl('../assets/images/filetypes/video.png')} />
+            <img src={helper.getImageUrl('../assets/images/filetypes/audio.png')} />
           </div>
           <i className="icon-ion-ios-cloud-upload-outline" />
           <h2>Drop your file here</h2>

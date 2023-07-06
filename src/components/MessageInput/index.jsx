@@ -100,6 +100,7 @@ export default class MessageInput extends Component {
 
       // Do not repeat upload file, forward the message to another user
       message = await this.props.process(file, user);
+      console.log(message, 'message');
 
       if (message === false) {
         if (batch) {
@@ -114,20 +115,25 @@ export default class MessageInput extends Component {
 
   async handlePaste(e) {
     var args = ipcRenderer.sendSync('file-paste');
-
     if (args.hasImage && this.canisend()) {
+      console.log(args, 'args');
       e.preventDefault();
+      console.log(2)
 
       if ((await this.props.confirmSendImage(args.filename)) === false) {
+        console.log(111);
         return;
       }
 
-      let parts = [new window.Blob([new window.Uint8Array(args.raw.data)], { type: 'image/png' })];
+      // let parts = [new window.Blob([new window.Uint8Array(args.raw.data)], { type: 'image/png' })];
+      let parts = [new window.Blob(args.raw, { type: 'image/png' })];
+      
       let file = new window.File(parts, args.filename, {
         lastModified: new Date(),
+        path: args.filename,
         type: 'image/png',
+        size: args.raw.length,
       });
-
       this.batchProcess(file);
     }
   }
