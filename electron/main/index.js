@@ -80,6 +80,8 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: t
 
 const createMainWindow = () => {
   mainWindow = new BrowserWindow({
+    width: 880,
+    height: 550,
     minWidth: 745,
     minHeight: 350,
     transparent: true,
@@ -110,7 +112,16 @@ const createMainWindow = () => {
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8',
   );
 
-  const filter = { urls: ['https://login.wx.qq.com/*', 'https://wx.qq.com/*', 'https://webpush.wx.qq.com/*'] };
+  const filter = {
+    urls: [
+      // 'https://login.wx.qq.com/*',
+      // 'https://wx.qq.com/*',
+      // 'https://webpush.wx.qq.com/*',
+      // 'https://file.wx.qq.com/*',
+      'https://*.qq.com/*',
+      'http://*.qq.com/*',
+    ],
+  };
 
   session.defaultSession.webRequest.onBeforeSendHeaders(filter, async (details, callback) => {
     // details.requestHeaders['referer'] = 'https://wx.qq.com/?&lang=zh_CN&target=t;'
@@ -187,15 +198,15 @@ const createMainWindow = () => {
     shell.openExternal(url);
   });
 
-  // mainWindow.on('close', e => {
-  //   if (forceQuit) {
-  //     mainWindow = null;
-  //     app.quit();
-  //   } else {
-  //     e.preventDefault();
-  //     mainWindow.hide();
-  //   }
-  // });
+  mainWindow.on('close', e => {
+    if (forceQuit) {
+      mainWindow = null;
+      app.quit();
+    } else {
+      e.preventDefault();
+      mainWindow.hide();
+    }
+  });
 
   ipcMain.on('settings-apply', (event, args) => {
     settings = args.settings;
@@ -234,7 +245,6 @@ const createMainWindow = () => {
         filename,
         raw: image.toPNG(),
       };
-      console.log(image, 'image');
       fs.writeFileSync(filename, image.toPNG());
     }
     event.returnValue = args;
@@ -242,20 +252,27 @@ const createMainWindow = () => {
 
   ipcMain.on('file-download', async (event, args) => {
     var filename = args.filename;
-
-    fs.writeFileSync(filename, args.raw.replace(/^data:image\/png;base64,/, ''), {
-      encoding: 'base64',
-      // Overwrite file
-      flag: 'wx',
-    });
-    event.returnValue = filename;
+    fs.writeFile(
+      filename,
+      args.raw.replace(/^data:image\/png;base64,/, ''),
+      {
+        encoding: 'base64',
+        // Overwrite file
+        flag: 'wx',
+      },
+      () => {
+        event.returnValue = filename;
+      },
+    );
   });
 
-  ipcMain.on('open-file', async (event, filename) => {
+  ipcMain.on('open-file', (event, filename) => {
+    console.log('open-file');
     shell.openPath(filename);
   });
 
-  ipcMain.on('open-folder', async (event, dir) => {
+  ipcMain.on('open-folder', (event, dir) => {
+    console.log('open-folder');
     shell.openPath(dir);
   });
 
@@ -269,7 +286,7 @@ const createMainWindow = () => {
     console.log(req, url);
   });
 
-  ipcMain.on('open-image', async (event, params) => {
+  ipcMain.on('open-image', (event, params) => {
     console.log('open-image');
     let args = JSON.parse(params);
     if (args.src) {

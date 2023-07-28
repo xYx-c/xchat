@@ -278,7 +278,7 @@ const helper = {
   isOsx: window.process.platform === 'darwin',
 
   isSuspend: () => {
-    return ipcRenderer.sendSync('is-suspend');
+    return ipcRenderer.send('is-suspend');
   },
   md5: (file) => {
       const md = new MD5();

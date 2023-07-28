@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { ipcRenderer } from 'electron';
 import clazz from 'classnames';
+import { basename } from 'path';
 
 import classes from './style.module.scss';
 import Emoji from './Emoji';
@@ -89,7 +90,6 @@ export default class MessageInput extends Component {
     if (this.canisend() === false) {
       return;
     }
-
     for (let user of receiver) {
       if (message) {
         await this.props
@@ -97,11 +97,8 @@ export default class MessageInput extends Component {
           .catch(ex => showMessage(`Sending message to ${user.NickName} has failed!`));
         continue;
       }
-
       // Do not repeat upload file, forward the message to another user
       message = await this.props.process(file, user);
-      console.log(message, 'message');
-
       if (message === false) {
         if (batch) {
           showMessage(`Send message to ${user.NickName} is failed!`);
@@ -116,24 +113,16 @@ export default class MessageInput extends Component {
   async handlePaste(e) {
     var args = ipcRenderer.sendSync('file-paste');
     if (args.hasImage && this.canisend()) {
-      console.log(args, 'args');
       e.preventDefault();
-      console.log(2)
-
       if ((await this.props.confirmSendImage(args.filename)) === false) {
-        console.log(111);
         return;
       }
-
-      // let parts = [new window.Blob([new window.Uint8Array(args.raw.data)], { type: 'image/png' })];
-      let parts = [new window.Blob(args.raw, { type: 'image/png' })];
-      
-      let file = new window.File(parts, args.filename, {
+      let parts = [new Blob([new Uint8Array(args.raw)], { type: 'image/png' })];
+      let file = new File(parts, basename(args.filename), {
         lastModified: new Date(),
-        path: args.filename,
         type: 'image/png',
-        size: args.raw.length,
       });
+      Object.defineProperty(file, 'path', { value: args.filename });
       this.batchProcess(file);
     }
   }
@@ -180,11 +169,7 @@ export default class MessageInput extends Component {
             onClick={e => canisend && this.refs.uploader.click()}
           />
 
-          <i
-            className="icon-ion-android-happy"
-            id="showEmoji"
-            onClick={e => canisend && this.toggleEmoji(true)}
-          />
+          <i className="icon-ion-android-happy" id="showEmoji" onClick={e => canisend && this.toggleEmoji(true)} />
 
           <input
             onChange={e => {

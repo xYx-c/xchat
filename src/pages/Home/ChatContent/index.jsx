@@ -104,12 +104,12 @@ export default class ChatContent extends Component {
         if (uploading) {
           return `
                         <div>
-                            <img class="open-image unload" data-id="${message.MsgId}" src="${image.src}" data-fallback="${image.fallback}" />
+                            <img class="open-image unload" data-id="${message.MsgId}" src="${image.src || ''}" data-fallback="${image.fallback}" />
                             <i class="icon-ion-android-arrow-up"></i>
                         </div>
                     `;
         }
-        return `<img class="open-image unload" data-id="${message.MsgId}" src="${image.src}" data-fallback="${image.fallback}" />`;
+        return `<img class="open-image unload" data-id="${message.MsgId}" src="${image.src || ''}" data-fallback="${image.fallback}" />`;
       case 34:
         /* eslint-disable */
         // Voice
@@ -224,7 +224,7 @@ export default class ChatContent extends Component {
         // File message
         let file = message.file;
         let download = message.download;
-        
+
         let src = helper.getImageUrl(`../assets/images/filetypes/${helper.getFiletypeIcon(file.extension)}`);
 
         /* eslint-disable */
@@ -290,7 +290,6 @@ export default class ChatContent extends Component {
       if (!user) {
         return false;
       }
-
       return (
         <div
           className={clazz('unread', classes.message, {
@@ -350,7 +349,7 @@ export default class ChatContent extends Component {
       } else {
         let response = await axios.get(target.src, { responseType: 'arraybuffer' });
         let base64 = Buffer.from(response.data).toString('base64');
-        ipcRenderer.sendSync('open-image', JSON.stringify({ dataset: target.dataset, base64 }));
+        ipcRenderer.send('open-image', JSON.stringify({ dataset: target.dataset, base64 }));
       }
       return;
     }
@@ -403,7 +402,7 @@ export default class ChatContent extends Component {
       let message = this.props.getMessage(e.target.parentElement.dataset.id);
       let response = await axios.get(message.file.download, { responseType: 'arraybuffer' });
       let base64 = Buffer.from(response.data).toString('base64');
-      let filename = ipcRenderer.sendSync('file-download', {
+      let filename = ipcRenderer.send('file-download', {
         filename: `${this.props.downloads}/${message.file.name}`,
         raw: base64,
       });

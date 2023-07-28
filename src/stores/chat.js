@@ -106,12 +106,14 @@ async function resolveMessage(message) {
 
           file.uid = await helper.getCookie('wxuin');
           file.ticket = await helper.getCookie('webwx_data_ticket');
+          // file.download = `${axios.defaults.baseURL.replace( /^https:\/\//, 'https://file.',
+          // )}cgi-bin/mmwebwx-bin/webwxgetmedia?sender=${message.FromUserName}&mediaid=${file.mediaId}&filename=${file.name
+          //   }&fromuser=${file.uid}&pass_ticket=undefined&webwx_data_ticket=${file.ticket}`;
           file.download = `${axios.defaults.baseURL.replace(
             /^https:\/\//,
             'https://file.',
           )}cgi-bin/mmwebwx-bin/webwxgetmedia?sender=${message.FromUserName}&mediaid=${file.mediaId}&filename=${file.name
             }&fromuser=${file.uid}&pass_ticket=undefined&webwx_data_ticket=${file.ticket}`;
-
           message.MsgType += 6;
           message.file = file;
           message.download = {
@@ -505,8 +507,7 @@ class Chat {
   }
 
   @action async sendImageMessage(auth, message, isForward) {
-    console.log(message, 'message');
-    var response = await axios.post('/cgi-bin/mmwebwx-bin/webwxsendmsgimg?fun=async&f=json', {
+    const response = await axios.post('/cgi-bin/mmwebwx-bin/webwxsendmsgimg?fun=async&f=json', {
       BaseRequest: {
         Sid: auth.wxsid,
         Uin: auth.wxuin,
@@ -721,19 +722,15 @@ class Chat {
   }
 
   @action async process(file, user = self.user) {
-    console.log(file, 'file');
     var showMessage = snackbar.showMessage;
-
     if (!file || file.size === 0) {
       showMessage("You can't send an empty file.");
       return false;
     }
-
     if (!file || file.size >= 100 * 1024 * 1024) {
       showMessage('Send file not allowed to exceed 100M.');
       return false;
     }
-
     let { mediaId, signature, type, uploaderid } = await self.upload(file, user);
     const res = await self.sendMessage(
       user,
@@ -807,8 +804,7 @@ class Chat {
   }
 
   @action async upload(file, user = self.user) {
-    console.log('upload file:', file);
-    let id = +new Date() * 1000 + Math.random().toString().substr(2, 4);
+    let id = +new Date() * 1000 + Math.random().toString().substring(2, 4);
     let md5 = await helper.md5(file);
     let auth = await storage.get('auth');
     let ticket = await helper.getCookie('webwx_data_ticket');

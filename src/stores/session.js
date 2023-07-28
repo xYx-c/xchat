@@ -315,8 +315,6 @@ class Session {
           console.log('操作频繁');
           break;
         default:
-          console.log('response: ', response);
-          console.log('retcode: ', retcode);
           self.hasLogin();
           break;
       }
@@ -339,11 +337,12 @@ class Session {
     self.auth = storage.get('auth');
     if (self.auth) {
       axios.defaults.baseURL = self.auth.baseURL;
-      // await self.initUser();
-      if (!contacts.memberList || !contacts.memberList.length) {
-        await contacts.getContats();
-      }
       self.user = storage.get('user');
+      if (!self.user) self.exit();
+      // await self.initUser();
+      // if (!contacts.memberList || !contacts.memberList.length) {
+        await contacts.getContats();
+      // }
       // if (!chat.sessions || !chat.sessions.length) {
       await chat.loadChats(self.user.ChatSet);
       // }

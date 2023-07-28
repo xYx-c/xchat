@@ -11,7 +11,7 @@ import { normalize } from 'utils/emoji';
 class Contacts {
   @observable loading = false;
   @observable showGroup = true;
-  @observable memberList = storage.get('memberList') || [];
+  @observable memberList = [];
   @observable filtered = {
     query: '',
     result: [],
@@ -71,27 +71,27 @@ class Contacts {
 
     var auth = await storage.get('auth');
     var me = session.user.User;
-    if (storage.get('memberList') instanceof Array && storage.get('memberList').length) {
-      self.memberList = storage.get('memberList');
-    } else {
-      const response = await axios.get('/cgi-bin/mmwebwx-bin/webwxgetcontact', {
-        params: {
-          r: +new Date(),
-          seq: 0,
-          skey: auth.skey,
-        },
-      });
-      // Remove all official account and brand account
-      self.memberList = response.data.MemberList.filter(
-        e => helper.isContact(e) && !helper.isOfficial(e) && !helper.isBrand(e),
-      ).concat(me);
-      
-      self.memberList.map(e => {
-        e.MemberList = [];
-        return self.resolveUser(auth, e);
-      });
-      storage.set('memberList', self.memberList);
-    }
+    // if (storage.get('memberList') instanceof Array && storage.get('memberList').length) {
+    //   self.memberList = storage.get('memberList');
+    // } else {
+    const response = await axios.get('/cgi-bin/mmwebwx-bin/webwxgetcontact', {
+      params: {
+        r: +new Date(),
+        seq: 0,
+        skey: auth.skey,
+      },
+    });
+    // Remove all official account and brand account
+    self.memberList = response.data.MemberList.filter(
+      e => helper.isContact(e) && !helper.isOfficial(e) && !helper.isBrand(e),
+    ).concat(me);
+
+    self.memberList.map(e => {
+      e.MemberList = [];
+      return self.resolveUser(auth, e);
+    });
+    //   storage.set('memberList', self.memberList);
+    // }
 
     self.loading = false;
     self.filtered.result = self.group(self.memberList);
@@ -128,7 +128,9 @@ class Contacts {
     user.NickName = normalize(user.NickName);
     user.RemarkName = normalize(user.RemarkName);
     user.Signature = normalize(user.Signature);
-    user.HeadImgUrl = `${axios.defaults.baseURL}${user.HeadImgUrl.substr(1)}`;
+    user.HeadImgUrl = user.HeadImgUrl.startsWith('/')
+      ? `${axios.defaults.baseURL}${user.HeadImgUrl.substr(1)}`
+      : user.HeadImgUrl;
     user.MemberList.map(e => {
       e.NickName = normalize(e.NickName);
       e.RemarkName = normalize(e.RemarkName);
@@ -217,8 +219,7 @@ class Contacts {
 
   @action async deleteUser(id) {
     self.memberList = self.memberList.filter(e => e.UserName !== id);
-    storage.set('memberList', self.memberList);
-
+    // storage.set('memberList', self.memberList);
     // Update contact in menu
     // ipcRenderer.send('menu-update', {
     //   contacts: self.memberList.filter(e => helper.isContact(e)) || [],
@@ -227,6 +228,7 @@ class Contacts {
   }
 
   @action async updateUser(user) {
+    console.log('updateUser', user);
     var auth = await storage.get('auth');
     var list = self.memberList;
     var index = list.findIndex(e => e.UserName === user.UserName);
@@ -244,10 +246,9 @@ class Contacts {
       if (chating && user.UserName === chating.UserName) {
         Object.assign(chating, user);
       }
-
       list[index] = user;
       self.memberList.replace(list);
-      storage.set('memberList', self.memberList);
+      // storage.set('memberList', self.memberList);
     }
   }
 }
