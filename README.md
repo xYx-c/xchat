@@ -7,3 +7,6 @@
 ```sh
 yarn dev
 ```
+
+## License
+### MIT License
