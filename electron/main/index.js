@@ -82,15 +82,15 @@ const createMainWindow = () => {
   mainWindow = new BrowserWindow({
     width: 880,
     height: 550,
-    minWidth: 745,
-    minHeight: 350,
+    minWidth: 680,
+    minHeight: 450,
     transparent: true,
     titleBarStyle: 'hiddenInset',
     backgroundColor: 'none',
     resizable: true,
     icon,
     frame: !isWin,
-    title: 'Main window',
+    title: 'xchat',
     // icon: join(process.env.PUBLIC, 'favicon.ico'),
     webPreferences: {
       webSecurity: false,
@@ -326,7 +326,7 @@ const createMainWindow = () => {
       applicationName: pkg.name,
       applicationVersion: pkg.version,
       copyright:
-        'Made with 💖 by trazyn. \n https://github.com/trazyn/weweChat \nRevise By Riceneeder \n https://github.com/Riceneeder/weweChat',
+        'Made with 💖 by trazyn. \n https://github.com/xYx-c/xchat \nRevise By Riceneeder \n https://github.com/xYx-c/xchat',
       credits: `With the invaluable help of: \n web.wechat.com`,
       version: pkg.version,
     });

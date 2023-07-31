@@ -153,7 +153,7 @@ class Session {
     });
 
     self.user = response.data;
-    storage.set('user', response.data);
+    // storage.set('user', response.data);
 
     self.user.ContactList.map(e => {
       e.HeadImgUrl = `${axios.defaults.baseURL}${e.HeadImgUrl.substr(1)}`;
@@ -181,7 +181,7 @@ class Session {
 
     // Refresh the sync keys
     self.user.SyncKey = response.data.SyncCheckKey;
-    storage.set('user', self.user);
+    // storage.set('user', self.user);
     self.genSyncKey(response.data.SyncCheckKey.List);
 
     // Get the new friend, or chat room has change
@@ -337,14 +337,14 @@ class Session {
     self.auth = storage.get('auth');
     if (self.auth) {
       axios.defaults.baseURL = self.auth.baseURL;
-      self.user = storage.get('user');
-      if (!self.user) self.exit();
-      // await self.initUser();
+      // self.user = storage.get('user');
+      // if (!self.user) self.exit();
+      await self.initUser();
       // if (!contacts.memberList || !contacts.memberList.length) {
-        await contacts.getContats();
+        // await contacts.getContats();
       // }
       // if (!chat.sessions || !chat.sessions.length) {
-      await chat.loadChats(self.user.ChatSet);
+      // await chat.loadChats(self.user.ChatSet);
       // }
       // self.keepalive().catch(() => self.logout());
       self.keepalive();
@@ -367,9 +367,6 @@ class Session {
   async exit() {
     storage.remove('cookies');
     storage.remove('auth');
-    storage.remove('user');
-    storage.remove('contacts');
-    storage.remove('sessions');
     window.location.reload();
   }
 }

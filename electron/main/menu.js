@@ -20,38 +20,18 @@ export const menu = mainWindow => [
           mainWindow.webContents.send('show-settings');
         },
       },
-      {
-        label: 'messageInput',
-        accelerator: 'Esc',
-        click() {
-          mainWindow.show();
-          mainWindow.webContents.send('show-messageInput');
-        },
-      },
-      {
-        type: 'separator',
-      },
-      {
-        role: 'hide',
-      },
-      {
-        role: 'hideothers',
-      },
-      {
-        role: 'unhide',
-      },
-      {
-        label: 'Check for updates',
-        accelerator: !isOsx ? 'Ctrl+U' : 'Cmd+U',
+      // {
+        // label: 'Check for updates',
+        // accelerator: !isOsx ? 'Ctrl+U' : 'Cmd+U',
         // click() {
         //     checkForUpdates();
         // }
-      },
+      // },
       {
         type: 'separator',
       },
       {
-        label: 'Quit weweChat',
+        label: 'Quit xChat',
         accelerator: !isOsx ? 'Alt+Q' : 'Command+Q',
         selector: 'terminate:',
         click() {
@@ -89,36 +69,36 @@ export const menu = mainWindow => [
           mainWindow.webContents.send('show-batchsend');
         },
       },
-      {
-        type: 'separator',
-      },
-      {
-        label: 'Insert emoji',
-        accelerator: !isOsx ? 'Ctrl+I' : 'Cmd+I',
-        click() {
-          mainWindow.show();
-          mainWindow.webContents.send('show-emoji');
-        },
-      },
-      {
-        type: 'separator',
-      },
-      {
-        label: 'Next conversation',
-        accelerator: !isOsx ? 'Ctrl+J' : 'Cmd+J',
-        click() {
-          mainWindow.show();
-          mainWindow.webContents.send('show-next');
-        },
-      },
-      {
-        label: 'Previous conversation',
-        accelerator: !isOsx ? 'Ctrl+K' : 'Cmd+K',
-        click() {
-          mainWindow.show();
-          mainWindow.webContents.send('show-previous');
-        },
-      },
+      // {
+      //   type: 'separator',
+      // },
+      // {
+      //   label: 'Insert emoji',
+      //   accelerator: !isOsx ? 'Ctrl+I' : 'Cmd+I',
+      //   click() {
+      //     mainWindow.show();
+      //     mainWindow.webContents.send('show-emoji');
+      //   },
+      // },
+      // {
+      //   type: 'separator',
+      // },
+      // {
+      //   label: 'Next conversation',
+      //   accelerator: !isOsx ? 'Ctrl+J' : 'Cmd+J',
+      //   click() {
+      //     mainWindow.show();
+      //     mainWindow.webContents.send('show-next');
+      //   },
+      // },
+      // {
+      //   label: 'Previous conversation',
+      //   accelerator: !isOsx ? 'Ctrl+K' : 'Cmd+K',
+      //   click() {
+      //     mainWindow.show();
+      //     mainWindow.webContents.send('show-previous');
+      //   },
+      // },
     ],
   },
   // {
@@ -182,28 +162,19 @@ export const menu = mainWindow => [
           mainWindow.setFullScreen(isFullScreen);
         },
       },
-      {
-        label: 'Toggle Conversations',
-        accelerator: !isOsx ? 'Ctrl+Shift+M' : 'Shift+Cmd+M',
-        click() {
-          mainWindow.show();
-          mainWindow.webContents.send('show-conversations');
-        },
-      },
-      {
-        type: 'separator',
-      },
-      {
-        label: '',
-      },
+      // {
+      //   label: 'Toggle Conversations',
+      //   accelerator: !isOsx ? 'Ctrl+Shift+M' : 'Shift+Cmd+M',
+      //   click() {
+      //     mainWindow.show();
+      //     mainWindow.webContents.send('show-conversations');
+      //   },
+      // },
       {
         type: 'separator',
       },
       {
         role: 'toggledevtools',
-      },
-      {
-        role: 'togglefullscreen',
       },
     ],
   },
@@ -224,13 +195,13 @@ export const menu = mainWindow => [
   //     {
   //       label: '反馈(不一定解决)',
   //       click() {
-  //         shell.openExternal('https://github.com/Riceneeder/weweChat/issues');
+  //         shell.openExternal('https://github.com/xYx-c/xchat/issues');
   //       },
   //     },
   //     {
   //       label: 'Fork me on Github',
   //       click() {
-  //         shell.openExternal('https://github.com/Riceneeder/weweChat');
+  //         shell.openExternal('https://github.com/xYx-c/xchat');
   //       },
   //     },
   //   ],
@@ -265,7 +236,7 @@ export const tMenu = mainWindow => [
   {
     label: 'Fork me on Github',
     click() {
-      shell.openExternal('https://github.com/Riceneeder/weweChat');
+      shell.openExternal('https://github.com/xYx-c/xchat');
     },
   },
   {
@@ -279,17 +250,17 @@ export const tMenu = mainWindow => [
       mainWindow.toggleDevTools();
     },
   },
-  {
-    label: 'Hide menu bar icon',
-    click() {
-      mainWindow.webContents.send('hide-tray');
-    },
-  },
+  // {
+  //   label: 'Hide menu bar icon',
+  //   click() {
+  //     mainWindow.webContents.send('hide-tray');
+  //   },
+  // },
   {
     type: 'separator',
   },
   {
-    label: 'Quit weweChat',
+    label: 'Quit xChat',
     accelerator: !isOsx ? 'Alt+Q' : 'Command+Q',
     selector: 'terminate:',
     click() {

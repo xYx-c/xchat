@@ -228,7 +228,6 @@ class Contacts {
   }
 
   @action async updateUser(user) {
-    console.log('updateUser', user);
     var auth = await storage.get('auth');
     var list = self.memberList;
     var index = list.findIndex(e => e.UserName === user.UserName);
