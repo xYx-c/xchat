@@ -5,5 +5,8 @@
 ## 快速开始
 
 ```sh
-yarn dev
+yarn && yarn dev
 ```
+
+## License
+MIT License
