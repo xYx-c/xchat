@@ -9,4 +9,4 @@ yarn dev
 ```
 
 ## License
-### MIT License
+MIT License
