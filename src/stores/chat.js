@@ -9,7 +9,6 @@ import settings from './settings';
 import session from './session';
 import members from './members';
 import snackbar from './snackbar';
-import fs from 'fs';
 
 async function resolveMessage(message) {
   var auth = await storage.get('auth');

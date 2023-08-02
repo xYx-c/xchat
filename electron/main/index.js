@@ -35,23 +35,18 @@ const store = new storage();
 process.env.DIST_ELECTRON = join(__dirname, '../');
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist');
 process.env.PUBLIC = process.env.VITE_DEV_SERVER_URL ? join(process.env.DIST_ELECTRON, '../public') : process.env.DIST;
-
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
-
 // Set application name for Windows 10+ notifications
 if (process.platform === 'win32') app.setAppUserModelId(app.getName());
-
 if (!app.requestSingleInstanceLock()) {
   app.quit();
   process.exit(0);
 }
-
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js');
 const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, 'index.html');
-
 // Remove electron security warnings
 // This warning only shows in development mode
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security
@@ -71,8 +66,8 @@ let imagesCacheDir = `${userData}/images`;
 let voicesCacheDir = `${userData}/voices`;
 let avatarPath = tmp.dirSync();
 let avatarCache = {};
-let avatarPlaceholder = `${__dirname}/../../src/assets/images/user-fallback.png`;
-const icon = `${__dirname}/../../src/assets/images/dock.png`;
+let avatarPlaceholder = join(process.env.PUBLIC, 'images/user-fallback.png');
+const icon = join(process.env.PUBLIC, 'images/dock.png');
 let mainMenu = null;
 let trayMenu = null;
 
@@ -91,7 +86,6 @@ const createMainWindow = () => {
     icon,
     frame: !isWin,
     title: 'xchat',
-    // icon: join(process.env.PUBLIC, 'favicon.ico'),
     webPreferences: {
       webSecurity: false,
       enableRemoteModule: true,
@@ -356,8 +350,8 @@ function updateTray(unread = 0) {
     }
     let contextmenu = Menu.buildFromTemplate(trayMenu);
     let icon = unread
-      ? `${__dirname}/../../src/assets/images/icon-new-message.png`
-      : `${__dirname}/../../src/assets/images/icon.png`;
+      ? join(process.env.PUBLIC, 'images/icon-new-message.png')
+      : join(process.env.PUBLIC, 'images/icon-message.png');
     // Make sure the last tray has been destroyed
     setTimeout(() => {
       if (!tray) {

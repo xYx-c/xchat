@@ -1,8 +1,6 @@
-/**
- * @see https://www.electron.build/configuration/configuration
- */
 {
-  "appId": "YourAppID",
+  "appId": "org.xYx.xchat",
+  "productName":"xchat",
   "asar": true,
   "directories": {
     "output": "release/${version}"
@@ -11,14 +9,26 @@
     "dist-electron",
     "dist"
   ],
+  "linux": {
+    "executableName": "xchat",
+    "icon": "public/images/dock.png",
+    "artifactName": "${productName}_${version}.${ext}",
+    "target": [
+      "deb",
+      "rpm",
+      "AppImage"
+    ]
+  },
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
+    "icon": "public/images/dock.png",
     "target": [
       "dmg",
       "zip"
     ]
   },
   "win": {
+    "icon": "public/images/dock.png",
     "target": [
       {
         "target": "nsis",
@@ -38,6 +48,6 @@
   "publish": {
     "provider": "generic",
     "channel": "latest",
-    "url": "https://github.com/electron-vite/electron-vite-react/releases/download/v0.9.9/"
+    "url": "https://github.com/xYx-c/xchat/releases/download/${version}/"
   }
 }

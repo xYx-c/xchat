@@ -104,12 +104,14 @@ export default class ChatContent extends Component {
         if (uploading) {
           return `
                         <div>
-                            <img class="open-image unload" data-id="${message.MsgId}" src="${image.src || ''}" data-fallback="${image.fallback}" />
+                            <img class="open-image unload" data-id="${message.MsgId}" src="${image.src || ''
+            }" data-fallback="${image.fallback}" />
                             <i class="icon-ion-android-arrow-up"></i>
                         </div>
                     `;
         }
-        return `<img class="open-image unload" data-id="${message.MsgId}" src="${image.src || ''}" data-fallback="${image.fallback}" />`;
+        return `<img class="open-image unload" data-id="${message.MsgId}" src="${image.src || ''}" data-fallback="${image.fallback
+          }" />`;
       case 34:
         /* eslint-disable */
         // Voice
@@ -583,7 +585,7 @@ export default class ChatContent extends Component {
           var fallback = ev.target.dataset.fallback;
 
           if (fallback === 'undefined') {
-            fallback = 'assets/images/broken.png';
+            fallback = helper.getImageUrl('../assets/images/broken.png');
           }
 
           ev.target.src = fallback;
