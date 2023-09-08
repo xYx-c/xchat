@@ -660,7 +660,7 @@ class Chat {
   }
 
   @action async sendMessage(user, message, isForward = false, transformMessages = self.transformMessages) {
-    var id = +new Date() * 1000 + Math.random().toString().substr(2, 4);
+    var id = +new Date() * 1000 + Math.random().toString().substring(2, 4);
     var auth = await storage.get('auth');
     var payload = Object.assign({}, message, {
       content: helper.decodeHTML(message.content),
@@ -975,7 +975,7 @@ class Chat {
   }
 
   @action async recallMessage(message) {
-    var id = +new Date() * 1000 + Math.random().toString().substr(2, 4);
+    var id = +new Date() * 1000 + Math.random().toString().substring(2, 4);
     var auth = await storage.get('auth');
     var to = self.user.UserName;
     var response = await axios.post('/cgi-bin/mmwebwx-bin/webwxrevokemsg', {

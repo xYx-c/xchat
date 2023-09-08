@@ -190,12 +190,12 @@ class Contacts {
   }
 
   @action filter(text = '', showall = false) {
-    text = pinyin(text.toLocaleLowerCase());
+    text = pinyin(text.toLocaleLowerCase(), { toneType: 'none' });
     var list = self.memberList.filter(e => {
-      var res = pinyin(e.NickName).toLowerCase().indexOf(text) > -1;
+      var res = pinyin(e.NickName, { toneType: 'none' }).toLowerCase().indexOf(text) > -1;
 
       if (e.RemarkName) {
-        res = res || pinyin(e.RemarkName).toLowerCase().indexOf(text) > -1;
+        res = res || pinyin(e.RemarkName, {toneType: 'none'}).toLowerCase().indexOf(text) > -1;
       }
 
       return res;

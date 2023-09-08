@@ -11,8 +11,11 @@
   ],
   "linux": {
     "executableName": "xchat",
-    "icon": "public/images/dock.png",
+    "icon": "public/icons/icon.icns",
     "artifactName": "${productName}_${version}.${ext}",
+    "desktop": {
+      "Icon": "/usr/share/icons/hicolor/256x256/apps/xchat.png"
+    },
     "target": [
       "deb",
       "rpm",
@@ -21,14 +24,14 @@
   },
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
-    "icon": "public/images/dock.png",
+    "icon": "public/icons/icon.icns",
     "target": [
       "dmg",
       "zip"
     ]
   },
   "win": {
-    "icon": "public/images/dock.png",
+    "icon": "public/icons/icon.ico",
     "target": [
       {
         "target": "nsis",

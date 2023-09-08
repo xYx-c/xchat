@@ -1,11 +1,10 @@
 import { observable, action, makeAutoObservable } from 'mobx';
 import axios from 'axios';
-import pinyin from 'han';
-
 import contacts from './contacts';
 import session from './session';
 import storage from 'utils/storage';
 import helper from 'utils/helper';
+import { pinyin } from 'pinyin-pro';
 
 class AddMember {
   @observable show = false;
@@ -20,10 +19,10 @@ class AddMember {
   }
 
   @action search(text) {
-    text = pinyin.letter(text.toLocaleLowerCase());
+    text = pinyin(text.toLocaleLowerCase(), {toneType: 'none'});
 
     var list = contacts.memberList.filter(e => {
-      var res = pinyin.letter(e.NickName).toLowerCase().indexOf(text) > -1;
+      var res = pinyin(e.NickName, {toneType: 'none'}).toLowerCase().indexOf(text) > -1;
 
       if (
         e.UserName === session.user.User.UserName ||
@@ -35,7 +34,7 @@ class AddMember {
       }
 
       if (e.RemarkName) {
-        res = res || pinyin.letter(e.RemarkName).toLowerCase().indexOf(text) > -1;
+        res = res || pinyin(e.RemarkName, {toneType:'none'}).toLowerCase().indexOf(text) > -1;
       }
 
       return res;

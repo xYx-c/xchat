@@ -26,7 +26,7 @@ class NewChat {
       var res = pinyin(e.NickName, {toneType: 'none'}).toLowerCase().indexOf(text) > -1;
 
       if (e.RemarkName) {
-        res = res || pinyin.letter(e.RemarkName).toLowerCase().indexOf(text) > -1;
+        res = res || pinyin(e.RemarkName, {toneType: 'none'}).toLowerCase().indexOf(text) > -1;
       }
 
       return helper.isContact(e) && res;

@@ -1,7 +1,6 @@
 import { observable, action, makeAutoObservable } from 'mobx';
-import pinyin from 'han';
-
 import helper from 'utils/helper';
+import { pinyin } from 'pinyin-pro';
 
 class Members {
   @observable show = false;
@@ -51,7 +50,7 @@ class Members {
 
     if (text) {
       list = self.list.filter(e => {
-        return pinyin.letter(e.NickName).toLowerCase().indexOf(pinyin.letter(text.toLocaleLowerCase())) > -1;
+        return pinyin(e.NickName, {toneType: 'none'}).toLowerCase().indexOf(pinyin(text.toLocaleLowerCase(), {toneType: 'none'})) > -1;
       });
       self.filtered.replace(list);
 

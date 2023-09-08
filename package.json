@@ -14,24 +14,23 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && electron-builder",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build-icon": "electron-icon-builder --input=./public/icon.png --output=public --flatten"
   },
   "dependencies": {
+    "@electron/remote": "^2.0.10",
     "axios": "^1.4.0",
     "browser-md5-file": "^1.1.1",
     "classnames": "^2.3.2",
     "delegate": "^3.2.0",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.1.1",
-    "han": "^0.0.7",
     "mobx": "^6.10.0",
     "mobx-react": "^9.0.0",
     "moment": "^2.29.4",
     "pinyin-pro": "^3.16.0",
-    "prop-types": "^15.8.1",
     "randomcolor": "^0.6.2",
     "react-transition-group": "^4.4.5",
-    "@electron/remote": "^2.0.10",
     "tmp": "^0.2.1"
   },
   "devDependencies": {
@@ -43,6 +42,7 @@
     "@vitejs/plugin-react": "^4.0.3",
     "electron": "^25.3.1",
     "electron-builder": "^24.6.3",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.2",

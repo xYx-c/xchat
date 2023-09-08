@@ -101,17 +101,16 @@ export default class ChatContent extends Component {
       case 3:
         // Image
         let image = message.image;
+        image.src = image.src || '';
         if (uploading) {
           return `
                         <div>
-                            <img class="open-image unload" data-id="${message.MsgId}" src="${image.src || ''
-            }" data-fallback="${image.fallback}" />
+                            <img class="open-image unload" data-id="${message.MsgId}" src="${image.src}" data-fallback="${image.fallback}" />
                             <i class="icon-ion-android-arrow-up"></i>
                         </div>
                     `;
         }
-        return `<img class="open-image unload" data-id="${message.MsgId}" src="${image.src || ''}" data-fallback="${image.fallback
-          }" />`;
+        return `<img class="open-image unload" data-id="${message.MsgId}" src="${image.src}" data-fallback="${image.fallback}" />`;
       case 34:
         /* eslint-disable */
         // Voice

@@ -1,6 +1,5 @@
 import { observable, action, makeAutoObservable } from 'mobx';
 import { pinyin } from 'pinyin-pro';
-
 import contacts from './contacts';
 import storage from 'utils/storage';
 import helper from 'utils/helper';
@@ -23,13 +22,13 @@ class Search {
     var groups = [];
     var friend = [];
 
-    text = pinyin(text.toLocaleLowerCase());
+    text = pinyin(text.toLocaleLowerCase(), {toneType: 'none'});
 
     list = contacts.memberList.filter(e => {
-      var res = pinyin(e.NickName).toLowerCase().indexOf(text) > -1;
+      var res = pinyin(e.NickName, {toneType: 'none'}).toLowerCase().indexOf(text) > -1;
 
       if (e.RemarkName) {
-        res = res || pinyin(e.RemarkName).toLowerCase().indexOf(text) > -1;
+        res = res || pinyin(e.RemarkName, {toneType: 'none'}).toLowerCase().indexOf(text) > -1;
       }
 
       return res;

@@ -4,7 +4,7 @@ import pkg from '../../package.json';
 let isOsx = process.platform === 'darwin';
 let isFullScreen = false;
 
-export const menu = mainWindow => [
+export const menu = (mainWindow, app) => [
   {
     label: pkg.name,
     submenu: [
@@ -35,7 +35,6 @@ export const menu = mainWindow => [
         accelerator: !isOsx ? 'Alt+Q' : 'Command+Q',
         selector: 'terminate:',
         click() {
-          forceQuit = true;
           mainWindow = null;
           app.quit();
         },
@@ -207,7 +206,7 @@ export const menu = mainWindow => [
   //   ],
   // },
 ];
-export const tMenu = mainWindow => [
+export const tMenu = (mainWindow, app) => [
   {
     label: `You have 0 messages`,
     click() {
@@ -264,7 +263,6 @@ export const tMenu = mainWindow => [
     accelerator: !isOsx ? 'Alt+Q' : 'Command+Q',
     selector: 'terminate:',
     click() {
-      forceQuit = true;
       mainWindow = null;
       app.quit();
     },
