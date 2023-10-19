@@ -65,13 +65,12 @@ import { on, off } from 'utils/event';
 
     message = Object.assign({}, message);
 
-    if (isChatRoom) {
+    if (isChatRoom && message.Content) {
       let matchs = message.Content.split(':<br/>');
-
-      if (matchs && matchs.lenght) {
-        // Get the newest chat room infomation
-        from = stores.contacts.memberList.find(e => from.UserName === e.UserName);
-        user = from.MemberList.find(e => e.UserName === matchs[0]);
+      // Get the newest chat room infomation
+      from = stores.contacts.memberList.find(e => from.UserName === e.UserName);
+      user = from.MemberList.find(e => e.UserName === matchs[0]);
+      if (matchs.length > 1) {
         message.Content = matchs[1];
       }
     }
