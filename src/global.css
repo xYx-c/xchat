@@ -1,5 +1,6 @@
 * {
-  user-select: none;
+  /* 可否选择文本 */
+  /* user-select: none; */
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

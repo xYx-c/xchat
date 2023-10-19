@@ -33,7 +33,11 @@ export default class MessageInput extends Component {
   }
 
   async handleEnter(e) {
-    var message = this.refs.input.value.trim();
+    let message = this.refs.input.value.trim();
+    if (e.ctrlKey && e.code == 'Enter') {
+      // TODO: 输入换行
+      return;
+    }
     var user = this.props.user;
     var batch = user.length > 1;
     if (false || !this.canisend() || !message || e.code !== 'Enter') return;

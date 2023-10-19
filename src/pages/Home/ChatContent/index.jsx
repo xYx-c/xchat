@@ -69,7 +69,9 @@ import { on, off } from 'utils/event';
       let matchs = message.Content.split(':<br/>');
       // Get the newest chat room infomation
       from = stores.contacts.memberList.find(e => from.UserName === e.UserName);
-      user = from.MemberList.find(e => e.UserName === matchs[0]);
+      if (from) {
+        user = from.MemberList.find(e => e.UserName === matchs[0]);
+      }
       if (matchs.length > 1) {
         message.Content = matchs[1];
       }
@@ -101,7 +103,7 @@ export default class ChatContent extends Component {
       case 3:
         // Image
         let image = message.image;
-        image.src = image.src || '';
+        image.src = image.src ? image.src : '';
         if (uploading) {
           return `
                         <div>
@@ -625,8 +627,8 @@ export default class ChatContent extends Component {
         })}
         onClick={e => this.handleClick(e)}
       >
-        {user ? (
-          <div>
+        {user ?
+          (<div>
             <header>
               <div className={classes.info}>
                 <p dangerouslySetInnerHTML={{ __html: title }} title={title} />
@@ -645,9 +647,9 @@ export default class ChatContent extends Component {
             <div className={classes.messages} onScroll={e => this.handleScroll(e)} ref="viewport">
               {this.renderMessages(messages.get(user.UserName), user)}
             </div>
-          </div>
-        ) : (
-          <div
+          </div>)
+          :
+          (<div
             className={clazz({
               [classes.noselected]: !user,
             })}
@@ -655,7 +657,7 @@ export default class ChatContent extends Component {
             <img className="disabledDrag" src={helper.getImageUrl('../assets/images/noselected.png')} />
             <h1>No Chat selected :(</h1>
           </div>
-        )}
+          )}
 
         <div className={classes.tips} ref="tips">
           Unread message.
