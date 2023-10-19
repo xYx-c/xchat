@@ -36,33 +36,20 @@ export default class MessageInput extends Component {
     var message = this.refs.input.value.trim();
     var user = this.props.user;
     var batch = user.length > 1;
-
-    if (false || !this.canisend() || !message || e.charCode !== 13) return;
-
+    if (false || !this.canisend() || !message || e.code !== 'Enter') return;
     // You can not send message to yourself
     Promise.all(
-      user
-        .filter(e => e.UserName !== this.props.me.UserName)
+      user.filter(e => e.UserName !== this.props.me.UserName)
         .map(async e => {
-          let res = await this.props.sendMessage(
-            e,
-            {
-              content: message,
-              type: 1,
-            },
-            true,
-          );
-
+          let res = await this.props.sendMessage(e, { content: message, type: 1, }, true);
           if (!res) {
             await this.props.showMessage(
               batch ? `Sending message to ${e.NickName} has failed!` : 'Failed to send message.',
             );
           }
-
           return true;
         }),
     );
-
     this.refs.input.value = '';
   }
 
@@ -159,7 +146,7 @@ export default class MessageInput extends Component {
           placeholder="Type something to send..."
           readOnly={!canisend}
           onPaste={e => this.handlePaste(e)}
-          onKeyPress={e => this.handleEnter(e)}
+          onKeyDown={e => this.handleEnter(e)}
         />
 
         <div className={classes.action}>

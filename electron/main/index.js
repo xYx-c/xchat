@@ -68,7 +68,6 @@ let avatarPath = tmp.dirSync();
 let avatarCache = {};
 let avatarPlaceholder = join(process.env.PUBLIC, 'images/user-fallback.png');
 const icon = join(process.env.PUBLIC, 'icons/dock.png');
-console.log(icon, 'icon');
 let mainMenu = null;
 let trayMenu = null;
 

@@ -129,7 +129,7 @@ class Session {
   }
 
   @action async initUser() {
-    var response = await axios.post(
+    const response = await axios.post(
       `/cgi-bin/mmwebwx-bin/webwxinit?r=${-new Date()}&pass_ticket=${self.auth.passTicket}`,
       {
         BaseRequest: {
@@ -139,6 +139,10 @@ class Session {
         },
       },
     );
+
+    if (!response && !response.data) {
+      self.logout();
+    }
 
     axios.post(`/cgi-bin/mmwebwx-bin/webwxstatusnotify?lang=en_US&pass_ticket=${self.auth.passTicket}`, {
       BaseRequest: {
@@ -281,7 +285,7 @@ class Session {
             synckey: self.syncKey,
           },
         })
-        .catch(() => loop());
+        // .catch(() => loop());
 
       if (response && response.data) {
         try {
@@ -346,8 +350,8 @@ class Session {
       // if (!chat.sessions || !chat.sessions.length) {
       // await chat.loadChats(self.user.ChatSet);
       // }
-      // self.keepalive().catch(() => self.logout());
-      self.keepalive();
+      self.keepalive().catch(() => self.logout());
+      // self.keepalive();
     }
   }
 

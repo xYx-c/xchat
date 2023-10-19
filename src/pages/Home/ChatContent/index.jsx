@@ -68,12 +68,13 @@ import { on, off } from 'utils/event';
     if (isChatRoom) {
       let matchs = message.Content.split(':<br/>');
 
-      // Get the newest chat room infomation
-      from = stores.contacts.memberList.find(e => from.UserName === e.UserName);
-      user = from.MemberList.find(e => e.UserName === matchs[0]);
-      message.Content = matchs[1];
+      if (matchs && matchs.lenght) {
+        // Get the newest chat room infomation
+        from = stores.contacts.memberList.find(e => from.UserName === e.UserName);
+        user = from.MemberList.find(e => e.UserName === matchs[0]);
+        message.Content = matchs[1];
+      }
     }
-
     // If user is null, that mean user has been removed from this chat room
     return { message, user };
   },
