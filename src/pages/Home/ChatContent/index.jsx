@@ -76,6 +76,9 @@ import { on, off } from 'utils/event';
         message.Content = matchs[1];
       }
     }
+    if (message.image && !message.image.src) {
+      message.image.src = helper.getImageUrl('../assets/images/broken.png');
+    }
     // If user is null, that mean user has been removed from this chat room
     return { message, user };
   },
@@ -102,8 +105,7 @@ export default class ChatContent extends Component {
         return emojiParse(message.Content);
       case 3:
         // Image
-        let image = message.image;
-        image.src = image.src ? image.src : '';
+        let image = { src: '', fallback: '', ...message.image };
         if (uploading) {
           return `
                         <div>
