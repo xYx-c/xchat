@@ -102,7 +102,7 @@ export default class ChatContent extends Component {
         return emojiParse(message.Content);
       case 3:
         // Image
-        let image = message.image;
+        let image = message.image || {};
         if (!image.src || image.src == undefined || image.src == 'undefined') image.src = helper.getImageUrl('../assets/images/broken.png');
         if (uploading) {
           return `
