@@ -283,11 +283,11 @@ const createMainWindow = () => {
   ipcMain.on('open-image', (event, params) => {
     console.log('open-image');
     let args = JSON.parse(params);
-    if (args.src) {
+    if (args && args.src && !args.src.includes('undefined')) {
       shell.openPath(args.src.replace('file://', ''));
     } else {
-      if (!args.base64) return;
-      if (args.dataset && args.dataset.id) {
+      if (args && !args.base64) return;
+      if (args && args.dataset && args.dataset.id) {
         let filename = `${imagesCacheDir}/img_${args.dataset.id}`;
         fs.writeFile(filename, args.base64.replace(/^data:image\/png;base64,/, ''), 'base64', () => {
           shell.openPath(filename);
