@@ -33,9 +33,15 @@ export default class MessageInput extends Component {
   }
 
   async handleEnter(e) {
-    let message = this.refs.input.value.trim();
+    e.preventDefault();
+    const textarea = this.refs.input;
+    textarea.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // 阻止默认的 Enter 换行行为
+      }
+    });
+    let message = textarea.value.trim();
     if (e.ctrlKey && e.code == 'Enter') {
-      const textarea = this.refs.input;
       const cursorPosition = textarea.selectionStart;
       const newMessage = message.substring(0, cursorPosition) + '\n' + message.substring(cursorPosition);
       textarea.value = newMessage;
