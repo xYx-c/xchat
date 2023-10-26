@@ -12,7 +12,7 @@ const CONTACTFLAG_TOPCONTACT = 2048;
 const CONTACTFLAG_CONTACT = 1;
 
 const helper = {
-  getImageUrl: path => new URL(path, import.meta.url).href,
+  getImageUrl: name => new URL(`../assets/images/${name}`, import.meta.url).href,
 
   isContact: user => {
     if (helper.isFileHelper(user)) return true;

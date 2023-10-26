@@ -143,12 +143,12 @@ const Layout = () => {
       <div className={classes.dragDropHolder} ref={holder}>
         <div className={classes.inner}>
           <div>
-            <img src={helper.getImageUrl('../assets/images/filetypes/image.png')} />
-            <img src={helper.getImageUrl('../assets/images/filetypes/word.png')} />
-            <img src={helper.getImageUrl('../assets/images/filetypes/pdf.png')} />
-            <img src={helper.getImageUrl('../assets/images/filetypes/archive.png')} />
-            <img src={helper.getImageUrl('../assets/images/filetypes/video.png')} />
-            <img src={helper.getImageUrl('../assets/images/filetypes/audio.png')} />
+            <img src={helper.getImageUrl('filetypes/image.png')} />
+            <img src={helper.getImageUrl('filetypes/word.png')} />
+            <img src={helper.getImageUrl('filetypes/pdf.png')} />
+            <img src={helper.getImageUrl('filetypes/archive.png')} />
+            <img src={helper.getImageUrl('filetypes/video.png')} />
+            <img src={helper.getImageUrl('filetypes/audio.png')} />
           </div>
           <i className="icon-ion-ios-cloud-upload-outline" />
           <h2>Drop your file here</h2>

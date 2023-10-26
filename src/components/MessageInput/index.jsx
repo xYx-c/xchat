@@ -35,7 +35,12 @@ export default class MessageInput extends Component {
   async handleEnter(e) {
     let message = this.refs.input.value.trim();
     if (e.ctrlKey && e.code == 'Enter') {
-      // TODO: 输入换行
+      const textarea = this.refs.input;
+      const cursorPosition = textarea.selectionStart;
+      const newMessage = message.substring(0, cursorPosition) + '\n' + message.substring(cursorPosition);
+      textarea.value = newMessage;
+      // textarea.setSelectionRange(cursorPosition + 1, cursorPosition + 1);
+      textarea.scrollTop = textarea.scrollHeight;
       return;
     }
     var user = this.props.user;
@@ -143,14 +148,15 @@ export default class MessageInput extends Component {
       >
         <div className={classes.tips}>You should choose a contact first.</div>
 
-        <input
+        <textarea
           id="messageInput"
           ref="input"
-          type="text"
           placeholder="Type something to send..."
+          spellCheck="false"
+          rows={1}
           readOnly={!canisend}
           onPaste={e => this.handlePaste(e)}
-          onKeyDown={e => this.handleEnter(e)}
+          onKeyUp={e => this.handleEnter(e)}
         />
 
         <div className={classes.action}>

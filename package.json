@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist-electron/main/index.js",
   "description": "Electron Vite React boilerplate.",
-  "author": "alex <xYx.c@outlook.com>",
+  "author": "uiox <xYx.c@outlook.com>",
   "license": "MIT",
   "private": true,
   "debug": {

@@ -5,17 +5,17 @@
   align-items: center;
   justify-content: space-between;
 
-  & input {
-    height: 60px;
-    width: 100%;
+  & textarea {
+    border: none; /* 隐藏边框 */
+    resize: none; /* 禁用拖动按钮 */
+    width: 100%; /* 100%宽度 */
+    outline: none; /* 去除焦点时的轮廓 */
     margin-left: 32px;
-    line-height: 60px;
-    border: 0;
-    padding-right: 17px;
+    padding-right: 16px;
     background: 0;
     color: #333;
     font-size: 14px;
-    outline: 0;
+    // outline: 0;
   }
 
   & i {
