@@ -12,7 +12,7 @@ export default class Avatar extends Component {
     };
 
     static defaultProps = {
-        fallback: helper.getImageUrl('../assets/images/user-fallback.png'),
+        fallback: helper.getImageUrl('user-fallback.png'),
     };
 
     handleError(e) {

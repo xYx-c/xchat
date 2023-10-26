@@ -64,7 +64,7 @@ export default class Members extends Component {
         <ul className={classes.list}>
           {searching && filtered.length === 0 && (
             <div className={classes.notfound}>
-              <img src={helper.getImageUrl('../assets/images/crash.png')} />
+              <img src={helper.getImageUrl('crash.png')} />
               <h1>Can't find any people matching '{searching}'</h1>
             </div>
           )}

@@ -103,7 +103,7 @@ export default class ChatContent extends Component {
       case 3:
         // Image
         let image = message.image || {};
-        if (!image.src || image.src == undefined || image.src == 'undefined') image.src = helper.getImageUrl('../assets/images/broken.png');
+        if (!image.src || image.src == undefined || image.src == 'undefined') image.src = helper.getImageUrl('broken.png');
         if (uploading) {
           return `
                         <div>
@@ -228,7 +228,7 @@ export default class ChatContent extends Component {
         let file = message.file;
         let download = message.download;
 
-        let src = helper.getImageUrl(`../assets/images/filetypes/${helper.getFiletypeIcon(file.extension)}`);
+        let src = helper.getImageUrl(`filetypes/${helper.getFiletypeIcon(file.extension)}`);
 
         /* eslint-disable */
         return `
@@ -329,7 +329,7 @@ export default class ChatContent extends Component {
             />
 
             <div className={classes.content}>
-              <p
+              <pre
                 onContextMenu={e => this.showMessageAction(message)}
                 dangerouslySetInnerHTML={{ __html: this.getMessageContent(message) }}
               />
@@ -586,7 +586,7 @@ export default class ChatContent extends Component {
           var fallback = ev.target.dataset.fallback;
 
           if (fallback === 'undefined') {
-            fallback = helper.getImageUrl('../assets/images/broken.png');
+            fallback = helper.getImageUrl('broken.png');
           }
 
           ev.target.src = fallback;
@@ -654,7 +654,7 @@ export default class ChatContent extends Component {
               [classes.noselected]: !user,
             })}
           >
-            <img className="disabledDrag" src={helper.getImageUrl('../assets/images/noselected.png')} />
+            <img className="disabledDrag" src={helper.getImageUrl('noselected.png')} />
             <h1>No Chat selected :(</h1>
           </div>
           )}

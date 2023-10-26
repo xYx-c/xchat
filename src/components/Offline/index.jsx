@@ -19,7 +19,7 @@ export default class Avatar extends Component {
     return (
       <div className={classes.container} {...this.props}>
         <div>
-          <img className="disabledDrag" src={helper.getImageUrl("../assets/images/offline.png")} />
+          <img className="disabledDrag" src={helper.getImageUrl("offline.png")} />
 
           <h1>Oops, seems like you are offline!</h1>
 
