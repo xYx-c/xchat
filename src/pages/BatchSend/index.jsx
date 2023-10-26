@@ -4,6 +4,7 @@ import clazz from 'classnames';
 
 import classes from './style.module.scss';
 import MessageInput from 'components/MessageInput';
+import helper from '@/utils/helper';
 
 @inject(stores => ({
   show: stores.batchsend.show,
@@ -120,7 +121,7 @@ export default class BatchSend extends Component {
         <ul className={classes.list}>
           {searching && filtered.length === 0 && (
             <div className={classes.notfound}>
-              <img src="assets/images/crash.png" />
+              <img src={helper.getImageUrl('crash.png')} />
               <h1>Can't find any people matching '{searching}'</h1>
             </div>
           )}

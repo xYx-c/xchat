@@ -4,6 +4,7 @@ import clazz from 'classnames';
 import randomColor from 'randomcolor';
 
 import classes from './style.module.scss';
+import helper from '@/utils/helper';
 
 @inject(stores => ({
   filter: stores.contacts.filter,
@@ -75,7 +76,7 @@ export default class Contacts extends Component {
       return (
         <div className={clazz(classes.container, classes.notfound)}>
           <div className={classes.inner}>
-            <img src="assets/images/crash.png" />
+            <img src={helper.getImageUrl('crash.png')} />
             <h1>Can't find any people matching '{query}'</h1>
           </div>
         </div>

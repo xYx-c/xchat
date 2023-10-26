@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import clazz from 'classnames';
 
 import classes from './style.module.scss';
+import helper from '@/utils/helper';
 
 export default class UserList extends Component {
   static propTypes = {
@@ -137,7 +138,7 @@ export default class UserList extends Component {
     if (searching && list.length === 0) {
       return (
         <li className={classes.notfound}>
-          <img src="assets/images/crash.png" />
+          <img src={helper.getImageUrl('crash.png')} />
           <h3>Can't find any people matching '{searching}'</h3>
         </li>
       );
