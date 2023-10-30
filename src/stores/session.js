@@ -7,6 +7,7 @@ import storage from 'utils/storage';
 import { normalize } from 'utils/emoji';
 import chat from './chat';
 import contacts from './contacts';
+import { networkInterfaces } from 'node:os'
 
 const CancelToken = axios.CancelToken;
 const headers = {
@@ -21,6 +22,7 @@ class Session {
   @observable code;
   @observable avatar;
   @observable user;
+  @observable deviceCode;
 
   syncKey;
   // A callback for cancel the sync request
@@ -28,6 +30,24 @@ class Session {
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  generateDeviceCode() {
+    const interfaces = networkInterfaces();
+    let macAddress = "";
+    for (const interfaceName of Object.keys(interfaces)) {
+      const interfaceInfos = interfaces[interfaceName];
+      if (interfaceInfos) {
+        for (const interfaceInfo of interfaceInfos) {
+          if (interfaceInfo.mac && interfaceInfo.mac !== "00:00:00:00:00:00") {
+            macAddress = interfaceInfo.mac;
+            break;
+          }
+        }
+      }
+      if (macAddress.length > 0) break;
+    }
+    self.deviceCode = macAddress.replaceAll(':', '');
   }
 
   genSyncKey(list) {
@@ -48,6 +68,7 @@ class Session {
     var code = response.data.match(/[A-Za-z_\-\d]{10}==/)[0];
 
     self.code = code;
+    self.generateDeviceCode();
     self.check();
     return code;
   }
@@ -96,6 +117,7 @@ class Session {
             passTicket: response.data.match(/<pass_ticket>(.*?)<\/pass_ticket>/)[1],
             wxsid: response.data.match(/<wxsid>(.*?)<\/wxsid>/)[1],
             wxuin: response.data.match(/<wxuin>(.*?)<\/wxuin>/)[1],
+            deviceid: this.deviceCode,
           };
         } catch (ex) {
           window.alert(
@@ -136,6 +158,7 @@ class Session {
           Sid: self.auth.wxsid,
           Uin: self.auth.wxuin,
           Skey: self.auth.skey,
+          DeviceID: self.deviceCode
         },
       },
     );
@@ -144,7 +167,7 @@ class Session {
       self.logout();
     }
 
-    axios.post(`/cgi-bin/mmwebwx-bin/webwxstatusnotify?lang=en_US&pass_ticket=${self.auth.passTicket}`, {
+    axios.post(`/cgi-bin/mmwebwx-bin/webwxstatusnotify?lang=zh_US&pass_ticket=${self.auth.passTicket}`, {
       BaseRequest: {
         Sid: self.auth.wxsid,
         Uin: self.auth.wxuin,
@@ -158,7 +181,6 @@ class Session {
 
     self.user = response.data;
     // storage.set('user', response.data);
-
     self.user.ContactList.map(e => {
       e.HeadImgUrl = `${axios.defaults.baseURL}${e.HeadImgUrl.substr(1)}`;
     });
@@ -170,7 +192,7 @@ class Session {
   async getNewMessage() {
     var auth = self.auth;
     var response = await axios.post(
-      `/cgi-bin/mmwebwx-bin/webwxsync?sid=${auth.wxsid}&skey=${auth.skey}&lang=en_US&pass_ticket=${auth.passTicket}`,
+      `/cgi-bin/mmwebwx-bin/webwxsync?sid=${auth.wxsid}&skey=${auth.skey}&lang=zh_CN&pass_ticket=${auth.passTicket}`,
       {
         BaseRequest: {
           Sid: auth.wxsid,
@@ -283,17 +305,20 @@ class Session {
             uin: auth.wxuin,
             skey: auth.skey,
             synckey: self.syncKey,
+            deviceid: self.deviceCode,
           },
         })
-        // .catch(() => loop());
+      // .catch(() => loop());
 
       if (response && response.data) {
         try {
           eval(response.data);
         } catch (e) {
+          console.error('session synccheck eval respoonse error', e);
           return self.hasLogin();
         }
       } else {
+        console.error('session synccheck response error');
         return self.hasLogin();
       }
       // const retcode = response.data?.match(/retcode:"(\d+)"/)[1];
@@ -345,7 +370,7 @@ class Session {
       // if (!self.user) self.exit();
       await self.initUser();
       // if (!contacts.memberList || !contacts.memberList.length) {
-        // await contacts.getContats();
+      // await contacts.getContats();
       // }
       // if (!chat.sessions || !chat.sessions.length) {
       // await chat.loadChats(self.user.ChatSet);

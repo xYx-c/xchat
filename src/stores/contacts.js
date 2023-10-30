@@ -68,7 +68,6 @@ class Contacts {
 
   @action async getContats() {
     self.loading = true;
-
     var auth = await storage.get('auth');
     var me = session.user.User;
     // if (storage.get('memberList') instanceof Array && storage.get('memberList').length) {
@@ -79,6 +78,7 @@ class Contacts {
         r: +new Date(),
         seq: 0,
         skey: auth.skey,
+        DeviceID: session.deviceCode,
       },
     });
     // Remove all official account and brand account
@@ -92,7 +92,6 @@ class Contacts {
     });
     //   storage.set('memberList', self.memberList);
     // }
-
     self.loading = false;
     self.filtered.result = self.group(self.memberList);
     return (window.list = self.memberList);
@@ -195,7 +194,7 @@ class Contacts {
       var res = pinyin(e.NickName, { toneType: 'none' }).toLowerCase().indexOf(text) > -1;
 
       if (e.RemarkName) {
-        res = res || pinyin(e.RemarkName, {toneType: 'none'}).toLowerCase().indexOf(text) > -1;
+        res = res || pinyin(e.RemarkName, { toneType: 'none' }).toLowerCase().indexOf(text) > -1;
       }
 
       return res;
