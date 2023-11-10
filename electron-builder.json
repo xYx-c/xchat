@@ -51,6 +51,6 @@
   "publish": {
     "provider": "generic",
     "channel": "latest",
-    "url": "https://github.com/xYx-c/xchat/releases/download/${version}/"
+    "url": "https://github.com/xYx-c/xchat/releases/download/${version}"
   }
 }
