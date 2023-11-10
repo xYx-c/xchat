@@ -32,7 +32,6 @@ class UserInfo {
         self.pallet = user.pallet;
       } else {
         pallet = await helper.getPallet(user.HeadImgUrl);
-
         // Cache the pallet
         self.user.pallet = pallet;
         self.pallet = pallet;

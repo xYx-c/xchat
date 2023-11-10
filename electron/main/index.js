@@ -57,7 +57,6 @@ let forceQuit = false;
 let downloading = false;
 let tray;
 let settings = {};
-let isFullScreen = false;
 let isWin = process.platform === 'win32';
 let isOsx = process.platform === 'darwin';
 let isSuspend = false;

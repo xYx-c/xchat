@@ -77,10 +77,9 @@ class UserInfo extends Component {
   }
 
   handleAction(user) {
-    if (this.props.history.location.pathname !== '/') {
-      this.props.history.push('/');
-    }
-
+    // if (this.props.history.location.pathname !== '/') {
+    //   this.props.history.push('/');
+    // }
     setTimeout(() => {
       if (helper.isContact(user) || helper.isChatRoom(user.UserName)) {
         this.props.toggle(false);
@@ -203,7 +202,6 @@ class UserInfo extends Component {
           </div>
 
           {
-            /* eslint-disable */
             this.state.showEdit && (
               <input
                 autoFocus={true}
@@ -214,7 +212,6 @@ class UserInfo extends Component {
                 type="text"
               />
             )
-            /* eslint-enable */
           }
         </ModalBody>
       </Modal>

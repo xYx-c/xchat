@@ -1,4 +1,5 @@
 import pkg from '../../package.json';
+import { shell } from 'electron';
 
 // let isWin = process.platform === 'win32';
 let isOsx = process.platform === 'darwin';

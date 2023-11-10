@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { CSSTransition } from 'react-transition-group';
+import { CSSTransition, Transition } from 'react-transition-group';
 import clazz from 'classnames';
 
 import './style.scss';
@@ -10,11 +10,11 @@ import { on, off } from 'utils/event';
 class ModalBody extends Component {
   render() {
     return (
-      <CSSTransition transitionName="fade" transitionEnterTimeout={1000} transitionLeaveTimeout={1000}>
+      <Transition timeout={500}>
         <div className={clazz('Modal-body', this.props.className)} style={this.props.style}>
           {this.props.children}
         </div>
-      </CSSTransition>
+      </Transition>
     );
   }
 }
@@ -51,7 +51,6 @@ class Modal extends Component {
     if (!this.props.show || !this.props.overlay) {
       return;
     }
-
     return <div className={clazz('Modal-overlay', this.props.className)} onClick={this.props.onCancel} />;
   }
 
@@ -59,7 +58,6 @@ class Modal extends Component {
     if (!this.props.show) {
       return;
     }
-
     return <div className={clazz('Modal-content', this.props.className)}>{this.props.children}</div>;
   }
 
@@ -85,11 +83,10 @@ class Modal extends Component {
 
     return (
       <div className="Modal" ref="node">
-        <CSSTransition classNames={this.props.transition4overlay} timeout={{ enter: 200, exit: 140 }} ref="overlay">
+        <CSSTransition classNames={this.props.transition4overlay} timeout={200} ref="overlay">
           {() => this.renderOverlay()}
         </CSSTransition>
-
-        <TransitionPortal classNames={this.props.transition4body} timeout={{ enter: 200, exit: 140 }} ref="content">
+        <TransitionPortal classNames={this.props.transition4body} timeout={200} ref="content">
           {() => this.renderBody()}
         </TransitionPortal>
       </div>

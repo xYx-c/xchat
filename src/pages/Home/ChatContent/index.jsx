@@ -28,7 +28,6 @@ import { on, off } from 'utils/event';
   },
   showUserinfo: async (isme, user) => {
     var caniremove = helper.isChatRoomOwner(stores.chat.user);
-
     if (isme) {
       user = stores.session.user.User;
     } else {
@@ -39,7 +38,6 @@ import { on, off } from 'utils/event';
         }
       });
     }
-
     stores.userinfo.toggle(true, user, caniremove);
   },
   getMessage: messageid => {
@@ -99,7 +97,7 @@ export default class ChatContent extends Component {
                     `;
         }
         // Text message
-        return emojiParse(message.Content);
+        return `<pre>${emojiParse(message.Content)}</pre>`;
       case 3:
         // Image
         let image = message.image || {};
@@ -146,11 +144,11 @@ export default class ChatContent extends Component {
         if (emoji) {
           if (uploading) {
             return `
-                            <div>
-                                <img class="unload disabledDrag" src="${emoji.src}" data-fallback="${emoji.fallback}" />
-                                <i class="icon-ion-android-arrow-up"></i>
-                            </div>
-                        `;
+                    <div>
+                        <img class="unload disabledDrag" src="${emoji.src}" data-fallback="${emoji.fallback}" />
+                        <i class="icon-ion-android-arrow-up"></i>
+                    </div>
+                `;
           }
           return `<img src="${emoji.src}" class="unload disabledDrag" data-fallback="${emoji.fallback}" />`;
         }
@@ -168,7 +166,6 @@ export default class ChatContent extends Component {
         let html = `
                     <div class="${clazz(classes.contact, { 'is-friend': isFriend })}" data-userid="${contact.UserName}">
                         <img src="${contact.image}" class="unload disabledDrag" />
-
                         <div>
                             <p>${contact.name}</p>
                             <p>${contact.address}</p>
@@ -193,7 +190,6 @@ export default class ChatContent extends Component {
           return `
                         <div>
                             <video preload="metadata" controls src="${video.src}"></video>
-
                             <i class="icon-ion-android-arrow-up"></i>
                         </div>
                     `;
@@ -208,7 +204,9 @@ export default class ChatContent extends Component {
         }
 
         return `
-                    <video preload="metadata" poster="${video.cover}" controls src="${video.src}" />
+                    <div>
+                        <video preload="metadata" poster="${video.cover}" controls src="${video.src}" />
+                    </div>
                 `;
 
       case 49 + 2000:
@@ -329,7 +327,7 @@ export default class ChatContent extends Component {
             />
 
             <div className={classes.content}>
-              <pre
+              <p
                 onContextMenu={e => this.showMessageAction(message)}
                 dangerouslySetInnerHTML={{ __html: this.getMessageContent(message) }}
               />
@@ -614,9 +612,9 @@ export default class ChatContent extends Component {
   }
 
   render() {
-    var { loading, showConversation, user, messages } = this.props;
-    var title = user.RemarkName || user.NickName;
-    var signature = user.Signature;
+    let { loading, showConversation, user, messages } = this.props;
+    let title = user.RemarkName || user.NickName;
+    let signature = user.Signature;
 
     if (loading) return false;
 

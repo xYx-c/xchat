@@ -1,4 +1,4 @@
-:global .Modal-overlay {
+.Modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -8,7 +8,7 @@
   z-index: 999;
 }
 
-:global .Modal-header {
+.Modal-header {
   position: relative;
   padding: 8px 20px 4px;
   color: #777;
@@ -25,11 +25,11 @@
   }
 }
 
-:global .Modal-footer {
+.Modal-footer {
   padding: 8px 12px;
 }
 
-:global .Modal-content {
+.Modal-content {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -41,19 +41,19 @@
 
   & > div {
     pointer-events: all;
-    background: #fff;
+    // background: #fff;
     border-radius: 1px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   }
 }
 
-:global .Modal-body {
+.Modal-body {
   padding: 12px;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
-:global .Modal-overlay-enter {
+.Modal-overlay-enter {
   opacity: 0;
   visibility: hidden;
   transition: 0.2s;
@@ -64,7 +64,7 @@
   }
 }
 
-:global .Modal-overlay-leave {
+.Modal-overlay-leave {
   opacity: 1;
   visibility: visible;
   transition: 0.2s;
@@ -75,7 +75,7 @@
   }
 }
 
-:global .Modal-body-enter {
+.Modal-body-enter {
   transform: translate(-50%, -50%) scale(0.8);
   opacity: 0;
   transition: 0.2s cubic-bezier(0.5, -0.55, 0.4, 1.55);
@@ -86,7 +86,7 @@
   }
 }
 
-:global .Modal-body-leave {
+.Modal-body-leave {
   transform: translate(-50%, -50%);
   opacity: 1;
   transition: 0.14s;
