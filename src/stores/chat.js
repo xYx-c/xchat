@@ -33,6 +33,7 @@ async function resolveMessage(message) {
       // Image
       let image = {};
       image.src = `${axios.defaults.baseURL}cgi-bin/mmwebwx-bin/webwxgetmsgimg?&msgid=${message.MsgId}&skey=${auth.skey}`;
+      image.fallback = helper.getImageUrl('broken.png');
       message.image = image;
       break;
 
@@ -134,7 +135,7 @@ async function resolveMessage(message) {
           break;
 
         // case 5:
-          // url软文
+        // url软文
 
         default:
           console.error('Unknow app message: %o', Object.assign({}, message));
@@ -369,10 +370,10 @@ class Chat {
         message = await resolveMessage(message);
 
         if (
-          !helper.isMuted(user) &&
-          !sync &&
-          settings.showNotification &&
-          Date.now() - message.CreateTime * 1000 < 5000
+          !helper.isMuted(user)
+          && !sync
+          && settings.showNotification
+          && Date.now() - message.CreateTime * 1000 < 5000
         ) {
           let notification = new window.Notification(title, {
             icon: user.HeadImgUrl,

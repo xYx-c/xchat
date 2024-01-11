@@ -5,7 +5,6 @@ import Router from './routes';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import './global.css';
-import './assets/fonts/icomoon/style.css';
 import './utils/albumcolors';
 import { useStores } from './hooks/useStore';
 

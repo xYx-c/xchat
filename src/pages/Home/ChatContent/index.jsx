@@ -11,6 +11,7 @@ import Avatar from 'components/Avatar';
 import helper from 'utils/helper';
 import { parser as emojiParse } from 'utils/emoji';
 import { on, off } from 'utils/event';
+import { Local } from '@icon-park/react';
 
 @inject(stores => ({
   user: stores.chat.user,
@@ -101,7 +102,8 @@ export default class ChatContent extends Component {
       case 3:
         // Image
         let image = message.image || {};
-        if (!image.src || image.src == undefined || image.src == 'undefined') image.src = helper.getImageUrl('broken.png');
+        if (!image.src || image.src == undefined || image.src == 'undefined')
+          image.src = helper.getImageUrl('broken.png');
         if (uploading) {
           return `
                         <div>
@@ -112,13 +114,11 @@ export default class ChatContent extends Component {
         }
         return `<img class="open-image unload" data-id="${message.MsgId}" src="${image.src}" data-fallback="${image.fallback}" />`;
       case 34:
-        /* eslint-disable */
         // Voice
         let voice = message.voice;
         let times = message.VoiceLength;
         let width = 40 + 7 * (times / 2000);
         let seconds = 0;
-        /* eslint-enable */
 
         if (times < 60 * 1000) {
           seconds = Math.ceil(times / 1000);
@@ -239,12 +239,13 @@ export default class ChatContent extends Component {
                             <p>${helper.humanSize(file.size)}</p>
                         </div>
 
-                        ${uploading
-            ? '<i class="icon-ion-android-arrow-up"></i>'
-            : download.done
-              ? '<i class="icon-ion-android-more-horizontal is-file"></i>'
-              : '<i class="icon-ion-android-arrow-down is-download"></i>'
-          }
+                        ${
+                          uploading
+                            ? '<i class="icon-ion-android-arrow-up"></i>'
+                            : download.done
+                              ? '<i class="icon-ion-android-more-horizontal is-file"></i>'
+                              : '<i class="icon-ion-android-arrow-down is-download"></i>'
+                        }
                       <div class="logding" style="${uploading ? 'display: block' : 'display: none'}">
                         <div class="spinner">
                           <div class="double-bounce1"></div>
@@ -260,6 +261,7 @@ export default class ChatContent extends Component {
         return `
                     <div class="${classes.locationSharing}">
                         <i class="icon-ion-ios-location"></i>
+                        <Local theme="outline" size="24" fill="#ffffff"/>
                         Location sharing, Please check your phone.
                     </div>
                 `;
@@ -625,8 +627,8 @@ export default class ChatContent extends Component {
         })}
         onClick={e => this.handleClick(e)}
       >
-        {user ?
-          (<div>
+        {user ? (
+          <div>
             <header>
               <div className={classes.info}>
                 <p dangerouslySetInnerHTML={{ __html: title }} title={title} />
@@ -645,9 +647,9 @@ export default class ChatContent extends Component {
             <div className={classes.messages} onScroll={e => this.handleScroll(e)} ref="viewport">
               {this.renderMessages(messages.get(user.UserName), user)}
             </div>
-          </div>)
-          :
-          (<div
+          </div>
+        ) : (
+          <div
             className={clazz({
               [classes.noselected]: !user,
             })}
@@ -655,7 +657,7 @@ export default class ChatContent extends Component {
             <img className="disabledDrag" src={helper.getImageUrl('noselected.png')} />
             <h1>No Chat selected :(</h1>
           </div>
-          )}
+        )}
 
         <div className={classes.tips} ref="tips">
           Unread message.

@@ -8,6 +8,7 @@ import SearchBar from './SearchBar';
 import Chats from './Chats';
 import ChatContent from './ChatContent';
 import { useStores } from '@/hooks/useStore';
+import { Plus } from '@icon-park/react';
 
 const Home = () => {
   const stores = useStores();
@@ -33,7 +34,7 @@ const Home = () => {
 
           {showRedIcon && (
             <div className={classes.addChat} onClick={() => newChat()}>
-              <i className="icon-ion-android-add" />
+              <Plus theme="outline" size="24" fill="#fff"/>
             </div>
           )}
         </div>

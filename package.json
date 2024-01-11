@@ -1,6 +1,6 @@
 {
   "name": "xchat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist-electron/main/index.js",
   "description": "Electron Vite React boilerplate.",
   "author": "uiox <xYx.c@outlook.com>",
@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.1.0",
+    "@icon-park/react": "^1.4.2",
     "axios": "^1.6.1",
     "browser-md5-file": "^1.1.1",
     "classnames": "^2.3.2",

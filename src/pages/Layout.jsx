@@ -20,6 +20,7 @@ import Offline from 'components/Offline';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useStores } from '@/hooks/useStore';
 import helper from '@/utils/helper';
+import { UploadOne } from '@icon-park/react';
 
 const Layout = () => {
   const stores = useStores();
@@ -150,7 +151,7 @@ const Layout = () => {
             <img src={helper.getImageUrl('filetypes/video.png')} />
             <img src={helper.getImageUrl('filetypes/audio.png')} />
           </div>
-          <i className="icon-ion-ios-cloud-upload-outline" />
+          <UploadOne theme="outline" size="24" fill="#999"/>
           <h2>Drop your file here</h2>
         </div>
       </div>

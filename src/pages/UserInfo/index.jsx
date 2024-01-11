@@ -8,6 +8,7 @@ import classes from './style.module.scss';
 import Avatar from 'components/Avatar';
 import { Modal, ModalBody } from 'components/Modal';
 import helper from 'utils/helper';
+import { Write, MapDraw } from '@icon-park/react';
 
 @inject(stores => ({
   chatTo: userid => {
@@ -149,7 +150,7 @@ class UserInfo extends Component {
           >
             {!isme && isFriend && (
               <div className={classes.edit} onClick={() => this.toggleEdit()}>
-                <i className="icon-ion-edit" />
+                <Write theme="outline" size="16" fill="#fff" />
               </div>
             )}
 
@@ -170,7 +171,7 @@ class UserInfo extends Component {
                 <p dangerouslySetInnerHTML={{ __html: Signature || 'No Signature' }} />
 
                 <div className={classes.address}>
-                  <i className="icon-ion-android-map" style={{ color: fontColor }} />
+                  <MapDraw theme="outline" size="14" fill={{ fontColor }} />
                   {City || 'UNKNOW'}, {Province || 'UNKNOW'}
                 </div>
               </div>
@@ -201,18 +202,16 @@ class UserInfo extends Component {
             </div>
           </div>
 
-          {
-            this.state.showEdit && (
-              <input
-                autoFocus={true}
-                defaultValue={RemarkName}
-                onKeyPress={e => this.handleEnter(e)}
-                placeholder="Type the remark name"
-                ref="input"
-                type="text"
-              />
-            )
-          }
+          {this.state.showEdit && (
+            <input
+              autoFocus={true}
+              defaultValue={RemarkName}
+              onKeyPress={e => this.handleEnter(e)}
+              placeholder="Type the remark name"
+              ref="input"
+              type="text"
+            />
+          )}
         </ModalBody>
       </Modal>
     );

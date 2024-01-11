@@ -6,6 +6,7 @@ import classes from './style.module.scss';
 import Home from './Home';
 import Contacts from './Contacts';
 import Settings from './Settings';
+import { Communication, MoreOne, Peoples } from '@icon-park/react';
 
 export default class Footer extends Component {
   render() {
@@ -23,19 +24,19 @@ export default class Footer extends Component {
         <nav>
           <Link className="link" tabIndex="-1" to="/">
             <span className={clazz({ [classes.active]: pathname === '/' })}>
-              <i className="icon-ion-android-chat" />
+              <Communication theme="filled" size="22" fill="#777"/>
             </span>
           </Link>
 
           <Link className="link" tabIndex="-1" to="/contacts">
             <span className={clazz({ [classes.active]: pathname === '/contacts' })}>
-              <i className="icon-ion-ios-people" />
+              <Peoples theme="filled" size="22" fill="#777"/>
             </span>
           </Link>
 
           <Link className="link" tabIndex="-1" to="/settings">
             <span className={clazz({ [classes.active]: pathname === '/settings' })}>
-              <i className="icon-ion-android-more-vertical" />
+              <MoreOne theme="filled" size="24" fill="#777"/>
             </span>
           </Link>
         </nav>

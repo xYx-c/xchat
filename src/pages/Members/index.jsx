@@ -3,6 +3,7 @@ import { observer, inject } from 'mobx-react';
 
 import classes from './style.module.scss';
 import helper from 'utils/helper';
+import { Close, Plus } from '@icon-park/react';
 
 @inject(stores => ({
   show: stores.members.show,
@@ -50,14 +51,17 @@ export default class Members extends Component {
 
           <span>
             <i
-              className="icon-ion-android-add"
               onClick={e => this.props.addMember()}
               style={{
                 marginRight: 20,
               }}
-            />
+            >
+              <Plus theme="outline" size="24" fill="#4a4a4a" />
+            </i>
 
-            <i className="icon-ion-android-close" onClick={e => this.props.close()} />
+            <i onClick={e => this.props.close()}>
+              <Close theme="outline" size="24" fill="#4a4a4a" />
+            </i>
           </span>
         </header>
 

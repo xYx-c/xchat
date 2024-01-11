@@ -157,8 +157,6 @@ export default class UserList extends Component {
         >
           <img className={classes.avatar} src={e.HeadImgUrl} />
           <span className={classes.username} dangerouslySetInnerHTML={{ __html: e.RemarkName || e.NickName }} />
-
-          <i className="icon-ion-android-done-all" />
         </li>
       );
     });

@@ -6,6 +6,7 @@ import { basename } from 'path';
 
 import classes from './style.module.scss';
 import Emoji from './Emoji';
+import { Link,GrinningFace } from '@icon-park/react';
 
 export default class MessageInput extends Component {
   static propTypes = {
@@ -35,7 +36,7 @@ export default class MessageInput extends Component {
   async handleEnter(e) {
     e.preventDefault();
     const textarea = this.refs.input;
-    textarea.addEventListener('keydown', function(event) {
+    textarea.addEventListener('keydown', function (event) {
       if (event.key === 'Enter') {
         event.preventDefault(); // 阻止默认的 Enter 换行行为
       }
@@ -54,9 +55,10 @@ export default class MessageInput extends Component {
     if (false || !this.canisend() || !message || e.code !== 'Enter') return;
     // You can not send message to yourself
     Promise.all(
-      user.filter(e => e.UserName !== this.props.me.UserName)
+      user
+        .filter(e => e.UserName !== this.props.me.UserName)
         .map(async e => {
-          let res = await this.props.sendMessage(e, { content: message, type: 1, }, true);
+          let res = await this.props.sendMessage(e, { content: message, type: 1 }, true);
           if (!res) {
             await this.props.showMessage(
               batch ? `Sending message to ${e.NickName} has failed!` : 'Failed to send message.',
@@ -166,13 +168,13 @@ export default class MessageInput extends Component {
         />
 
         <div className={classes.action}>
-          <i
-            className="icon-ion-android-attach"
-            id="showUploader"
-            onClick={e => canisend && this.refs.uploader.click()}
-          />
+          <i id="showUploader" onClick={e => canisend && this.refs.uploader.click()}>
+            <Link theme="outline" size="24" fill="#4a4a4a" />
+          </i>
 
-          <i className="icon-ion-android-happy" id="showEmoji" onClick={e => canisend && this.toggleEmoji(true)} />
+          <i id="showEmoji" onClick={e => canisend && this.toggleEmoji(true)}>
+            <GrinningFace theme="outline" size="24" fill="#4a4a4a"/>
+          </i>
 
           <input
             onChange={e => {
